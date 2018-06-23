@@ -124,5 +124,20 @@ void configure_binning(){
   binning_7pt10 -> Write();
   file_7pt10 -> Close();
 
+  const int N_cost_bins_4pt6 = 17;
+  int min_cost_bin_4pt6[N_cost_bins_4pt6] = {1,11,21,26,31,36,41,45,49,53,57,61,66,71,76,81,91};
+  int max_cost_bin_4pt6[N_cost_bins_4pt6] = {10,20,25,30,35,40,44,48,52,56,60,65,70,75,80,90,100};
+
+  const int N_phi_bins_4pt6 = 10;
+  int min_phi_bin_4pt6[N_phi_bins_4pt6] = {1,9,17,21,24,26,28,31,35,43};
+  int max_phi_bin_4pt6[N_phi_bins_4pt6] = {8,16,20,23,25,27,30,34,42,50};
+
+  Binning *binning_4pt6 = new Binning();
+  binning_4pt6 -> ConfigureBinValues(N_cost_bins_4pt6,min_cost_bin_4pt6,max_cost_bin_4pt6,N_phi_bins_4pt6,min_phi_bin_4pt6,max_phi_bin_4pt6);
+
+  TFile *file_4pt6 = new TFile("~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_4pt6.root","RECREATE");
+  binning_4pt6 -> Write();
+  file_4pt6 -> Close();
+
 
 }
