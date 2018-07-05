@@ -41,10 +41,6 @@ void accxeff(int pt_min, int pt_max){
   gStyle -> SetOptStat(0);
   double PI = TMath::Pi();
 
-
-  TDirectory *dir = new TDirectory("directory","directory");
-  return;
-
   ostringstream convert_pt_min;
   convert_pt_min << pt_min;
   string str_pt_min =  convert_pt_min.str();
@@ -82,32 +78,32 @@ void accxeff(int pt_min, int pt_max){
   //============================================================================
   printf("Defining the pT ranges ... \n");
   //============================================================================
-  TH2D *hist_CostPhiHE_gen = (TH2D*) fileInput -> Get(Form("hCostPhiHE_%ipt%i_2m_gen",pt_min,pt_min+1));
-  TH3D *hist_CostPhiMassHE_rec = (TH3D*) fileInput -> Get(Form("hCostPhiMassHE_%ipt%i_2m_rec",pt_min,pt_min+1));
+  TH2D *histCostPhiGen = (TH2D*) fileInput -> Get(Form("hCostPhiHE_%ipt%i_2m_gen",pt_min,pt_min+1));
+  TH3D *histCostPhiMassRec = (TH3D*) fileInput -> Get(Form("hCostPhiMassHE_%ipt%i_2m_rec",pt_min,pt_min+1));
   cout << pt_min << " - " << pt_min+1 << endl;
-  //cout << hist_CostPhiHE_gen -> GetBinContent(20,20) << " " << hist_CostPhiHE_gen -> GetBinError(20,20) << endl;
+  //cout << histCostPhiGen -> GetBinContent(20,20) << " " << histCostPhiGen -> GetBinError(20,20) << endl;
 
   for(int i = pt_min+1;i < pt_max;i++){
     cout << i << " - " << i+1 << endl;
     TH2D *tmpTH2HistoGen = (TH2D*) fileInput -> Get(Form("hCostPhiHE_%ipt%i_2m_gen",i,i+1));
     //cout << tmpTH2HistoGen -> GetBinContent(20,20) << " " << tmpTH2HistoGen -> GetBinError(20,20) << endl;
-    hist_CostPhiHE_gen -> Add(tmpTH2HistoGen);
+    histCostPhiGen -> Add(tmpTH2HistoGen);
     TH3D *tmpTH3Histo = (TH3D*) fileInput -> Get(Form("hCostPhiMassHE_%ipt%i_2m_rec",i,i+1));
-    hist_CostPhiMassHE_rec -> Add(tmpTH3Histo);
+    histCostPhiMassRec -> Add(tmpTH3Histo);
   }
-  TH2D *hist_CostPhiHE_rec = (TH2D*) hist_CostPhiMassHE_rec -> Project3D("yx");
-  //cout << hist_CostPhiHE_gen -> GetBinContent(20,20) << " " << hist_CostPhiHE_gen -> GetBinError(20,20) << endl;
+  TH2D *histCostPhiRec = (TH2D*) histCostPhiMassRec -> Project3D("yx");
+  //cout << histCostPhiGen -> GetBinContent(20,20) << " " << histCostPhiGen -> GetBinError(20,20) << endl;
 
   //============================================================================
   printf("Creating the TH2D with the binning tuned on data ... \n");
   //============================================================================
-  TH2D *hist_CostPhiHE_gen_rebin = new TH2D("hist_CostPhiHE_gen_rebin","hist_CostPhiHE_gen_rebin",NCostBins,&CostValues[0],NPhiBins,&PhiValues[0]);
-  TH2D *hist_CostPhiHE_rec_rebin = new TH2D("hist_CostPhiHE_rec_rebin","hist_CostPhiHE_rec_rebin",NCostBins,&CostValues[0],NPhiBins,&PhiValues[0]);
+  TH2D *histCostPhiGenRebin = new TH2D("histCostPhiGenRebin","histCostPhiGenRebin",NCostBins,&CostValues[0],NPhiBins,&PhiValues[0]);
+  TH2D *histCostPhiRecRebin = new TH2D("histCostPhiRecRebin","histCostPhiRecRebin",NCostBins,&CostValues[0],NPhiBins,&PhiValues[0]);
 
   for(int i = 0;i < NCostBins;i++){
     for(int j = 0;j < NPhiBins;j++){
-      hist_CostPhiHE_gen_rebin -> SetBinContent(i+1,j+1,hist_CostPhiHE_gen -> Integral(CostBinsMin[i],CostBinsMax[i],PhiBinsMin[j],PhiBinsMax[j]));
-      hist_CostPhiHE_rec_rebin -> SetBinContent(i+1,j+1,hist_CostPhiHE_rec -> Integral(CostBinsMin[i],CostBinsMax[i],PhiBinsMin[j],PhiBinsMax[j]));
+      histCostPhiGenRebin -> SetBinContent(i+1,j+1,histCostPhiGen -> Integral(CostBinsMin[i],CostBinsMax[i],PhiBinsMin[j],PhiBinsMax[j]));
+      histCostPhiRecRebin -> SetBinContent(i+1,j+1,histCostPhiRec -> Integral(CostBinsMin[i],CostBinsMax[i],PhiBinsMin[j],PhiBinsMax[j]));
     }
   }
 
@@ -120,7 +116,10 @@ void accxeff(int pt_min, int pt_max){
   double parTails[4] = {1.06,3.23,2.55,1.56};
   double parSignal[3] = {20.,3.096,7.0e-02};
 
-  TH2D *histoSigmaJpsi = new TH2D("histoSigmaJpsi","",NCostBins,&CostValues[0],NPhiBins,&PhiValues[0]);
+  string titleHistSigmaJpsi = str_pt_min + " < #it{p}_{T} < " + str_pt_max + " GeV/#it{c}";
+  TH2D *histSigmaJpsi = new TH2D("histSigmaJpsi","",NCostBins,&CostValues[0],NPhiBins,&PhiValues[0]);
+  histSigmaJpsi -> SetTitle(titleHistSigmaJpsi.c_str());
+  gStyle -> SetPaintTextFormat("2.0f");
 
   TF1 *funcJpsiCB2 = new TF1("funcJpsiCB2",Func_Jpsi_CB2,2.2,3.5,7);
   funcJpsiCB2 -> SetParameter(0,parSignal[0]);
@@ -132,41 +131,55 @@ void accxeff(int pt_min, int pt_max){
   funcJpsiCB2 -> FixParameter(5,parTails[2]);
   funcJpsiCB2 -> FixParameter(6,parTails[3]);
 
+  char title[100];
+  double sigmaJpsi, errSigmaJpsi;
+
   for(int i = 1;i < NCostBins-1;i++){
     for(int j = 1;j < NPhiBins-1;j++){
       sprintf(histMassName,"HE_2pt6_%icost%i_%iphi%i",CostBinsMin[i],CostBinsMax[i],PhiBinsMin[j],PhiBinsMax[j]);
-      histMass = (TH1D*) hist_CostPhiMassHE_rec -> ProjectionZ(histMassName,CostBinsMin[i],CostBinsMax[i],PhiBinsMin[j],PhiBinsMax[j]);
+      histMass = (TH1D*) histCostPhiMassRec -> ProjectionZ(histMassName,CostBinsMin[i],CostBinsMax[i],PhiBinsMin[j],PhiBinsMax[j]);
       sprintf(histMassName,"sigma_plots/HE_2pt6_%icost%i_%iphi%i.png",CostBinsMin[i],CostBinsMax[i],PhiBinsMin[j],PhiBinsMax[j]);
-      TCanvas *c_histoSigmaJpsi = new TCanvas("c_histoSigmaJpsi","c_histoSigmaJpsi",20,20,600,600);
       histMass -> Fit(funcJpsiCB2,"RL");
-      histoSigmaJpsi -> SetBinContent(i+1,j+1,funcJpsiCB2 -> GetParameter(2));
+
+      sigmaJpsi = funcJpsiCB2 -> GetParameter(2);
+      errSigmaJpsi = funcJpsiCB2 -> GetParError(2);
+
+      histSigmaJpsi -> SetBinContent(i+1,j+1,sigmaJpsi*1000);
+      histSigmaJpsi -> SetBinError(i+1,j+1,errSigmaJpsi*1000);
       histMass -> Draw();
-      c_histoSigmaJpsi -> SaveAs(histMassName);
+
+      //TCanvas *c_histSigmaJpsi = new TCanvas("c_histSigmaJpsi","c_histSigmaJpsi",20,20,600,600);
+      //sprintf(title,"#it{#sigma}_{J/#psi} = (%3.2f +- %3.2f) MeV/#it{c}^{2}",sigmaJpsi*1000,errSigmaJpsi*1000);
+      //TLatex *lat = new TLatex(0.55,0.70,title);
+      //lat -> SetTextSize(0.04);
+      //lat -> SetNDC();
+      //lat -> SetTextFont(42);
+      //lat -> Draw("same");
+
+      //c_histSigmaJpsi -> SaveAs(histMassName);
+      //delete c_histSigmaJpsi;
     }
   }
-  histoSigmaJpsi -> Draw("COLZtext");
-
-
-  return;
+  histSigmaJpsi -> Draw("COLZtexterr");
 
   //============================================================================
   printf("Computing Acc X Eff ... \n");
   //============================================================================
-  hist_CostPhiHE_rec -> Sumw2();
-  hist_CostPhiHE_gen -> Sumw2();
-  hist_CostPhiHE_rec_rebin -> Sumw2();
-  hist_CostPhiHE_gen_rebin -> Sumw2();
+  histCostPhiRec -> Sumw2();
+  histCostPhiGen -> Sumw2();
+  histCostPhiRecRebin -> Sumw2();
+  histCostPhiGenRebin -> Sumw2();
 
   TH2D *hist_accxeff_HE = new TH2D("hist_accxeff_HE","",100,-1,1,50,0,PI);
-  hist_accxeff_HE -> Divide(hist_CostPhiHE_rec,hist_CostPhiHE_gen,1,1,"B");
+  hist_accxeff_HE -> Divide(histCostPhiRec,histCostPhiGen,1,1,"B");
 
   TH2D *hist_accxeff_HE_rebin = new TH2D("hist_accxeff_HE_rebin","",NCostBins,&CostValues[0],NPhiBins,&PhiValues[0]);
-  hist_accxeff_HE_rebin -> Divide(hist_CostPhiHE_rec_rebin,hist_CostPhiHE_gen_rebin,1,1,"B");
+  hist_accxeff_HE_rebin -> Divide(histCostPhiRecRebin,histCostPhiGenRebin,1,1,"B");
+  return;
 
   //============================================================================
   printf("Saving Acc X Eff ... \n");
   //============================================================================
-  return;
   string filePathOutput = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/NEW_GIT_OUTPUT/accxeff_";
   string fileNameOutput = filePathOutput + dataset + ".root";
   printf("Opening %s ... \n",fileNameOutput.c_str());
