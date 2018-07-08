@@ -180,8 +180,7 @@ void accxeff(int pt_min, int pt_max){
   //============================================================================
   printf("Saving Acc X Eff ... \n");
   //============================================================================
-  string filePathOutput = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/NEW_GIT_OUTPUT/accxeff_";
-  string fileNameOutput = filePathOutput + dataset + ".root";
+  string fileNameOutput = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/NEW_GIT_OUTPUT/accxeff_" + dataset + ".root";
   printf("Opening %s ... \n",fileNameOutput.c_str());
   TFile *fileOutput = new TFile(fileNameOutput.c_str(),"RECREATE");
   hist_accxeff_HE -> Write();

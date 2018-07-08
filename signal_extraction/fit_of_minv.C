@@ -60,7 +60,7 @@ void single_histo_fit(){
   vector <int> CostBinsMin, CostBinsMax;
   vector <int> PhiBinsMin, PhiBinsMax;
 
-  string dataset = "4pt7";
+  string dataset = "2pt4";
   string fileInputName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/mass_histos_cost_phi_" + dataset + ".root";
   TFile *fileInput = new TFile(fileInputName.c_str());
 
@@ -76,7 +76,8 @@ void single_histo_fit(){
   PhiBinsMax = binning -> GetPhiBinsMax();
   const int NPhiBins = PhiValues.size() - 1;
 
-  TH1D *histMinv = (TH1D*) fileInput -> Get("HE_11cost20_21phi23");
+  //TH1D *histMinv = (TH1D*) fileInput -> Get("HE_11cost20_17phi20");
+  TH1D *histMinv = (TH1D*) fileInput -> Get("HE_11cost20_9phi16");
   histMinv -> SetMarkerStyle(20);
   histMinv -> SetMarkerSize(0.7);
   fit_of_minv(histMinv,1,1,dataset);
@@ -122,30 +123,62 @@ void fit_of_slice(){
   TH2D *histSigmaJpsi = new TH2D("histSigmaJpsi","histSigmaJpsi",NCostBins,&CostValues[0],NPhiBins,&PhiValues[0]);
   gStyle -> SetPaintTextFormat("2.0f");
 
+  //============================================================================
+  printf("Fitting along Cost slices ... \n");
+  //============================================================================
   TH1D *histNJpsiCost = new TH1D("histNJpsiCost","",NCostBins,&CostValues[0]);
   TH1D *histSigmaJpsiCost = new TH1D("histSigmaJpsiCost","",NCostBins,&CostValues[0]);
 
   for(int i = 1;i < NCostBins-1;i++){
     sprintf(histMinvName,"HE_%icost%i_%iphi%i",CostBinsMin[i],CostBinsMax[i],PhiBinsMin[1],PhiBinsMax[1]);
-    TH1D *histMinvSlice = (TH1D*) fileInput -> Get(histMinvName);
+    TH1D *histMinvSliceCost = (TH1D*) fileInput -> Get(histMinvName);
     for(int j = 2;j < NPhiBins-1;j++){
       sprintf(histMinvName,"HE_%icost%i_%iphi%i",CostBinsMin[i],CostBinsMax[i],PhiBinsMin[j],PhiBinsMax[j]);
       TH1D *tmpMinvSlice = (TH1D*) fileInput -> Get(histMinvName);
-      histMinvSlice -> Add(tmpMinvSlice);
+      histMinvSliceCost -> Add(tmpMinvSlice);
     }
-    fit_of_minv(histMinvSlice,i,100,dataset);
+    histMinvSliceCost -> SetName(Form("HE_%icost%i",CostBinsMin[i],CostBinsMax[i]));
+    fit_of_minv(histMinvSliceCost,i,100,dataset);
     histNJpsiCost -> SetBinContent(i+1,nJpsi);
     histNJpsiCost -> SetBinError(i+1,statJpsi);
     histSigmaJpsiCost -> SetBinContent(i+1,sigmaJpsi);
     histSigmaJpsiCost -> SetBinError(i+1,errSigmaJpsi);
   }
-  histSigmaJpsiCost -> Draw();
+  //histSigmaJpsiCost -> Draw();
 
-  string fileSigmaJpsiCostName = "slice_fit_" + dataset + "/" + dataset + ".root";
-  TFile *fileSigmaJpsiCost = new TFile(fileSigmaJpsiCostName.c_str(),"RECREATE");
+  //============================================================================
+  printf("Fitting along Phi slices ... \n");
+  //============================================================================
+  TH1D *histNJpsiPhi = new TH1D("histNJpsiPhi","",NPhiBins,&PhiValues[0]);
+  TH1D *histSigmaJpsiPhi = new TH1D("histSigmaJpsiPhi","",NPhiBins,&PhiValues[0]);
+
+  for(int i = 1;i < NPhiBins-1;i++){
+    sprintf(histMinvName,"HE_%icost%i_%iphi%i",CostBinsMin[1],CostBinsMax[1],PhiBinsMin[i],PhiBinsMax[i]);
+    TH1D *histMinvSlicePhi = (TH1D*) fileInput -> Get(histMinvName);
+    for(int j = 2;j < NCostBins-1;j++){
+      sprintf(histMinvName,"HE_%icost%i_%iphi%i",CostBinsMin[j],CostBinsMax[j],PhiBinsMin[i],PhiBinsMax[i]);
+      TH1D *tmpMinvSlice = (TH1D*) fileInput -> Get(histMinvName);
+      histMinvSlicePhi -> Add(tmpMinvSlice);
+      cout << histMinvName << endl;
+    }
+    histMinvSlicePhi -> SetName(Form("HE_%iphi%i",PhiBinsMin[i],PhiBinsMax[i]));
+    fit_of_minv(histMinvSlicePhi,100,i,dataset);
+    histNJpsiPhi -> SetBinContent(i+1,nJpsi);
+    histNJpsiPhi -> SetBinError(i+1,statJpsi);
+    histSigmaJpsiPhi -> SetBinContent(i+1,sigmaJpsi);
+    histSigmaJpsiPhi -> SetBinError(i+1,errSigmaJpsi);
+  }
+  //histSigmaJpsiCost -> Draw();
+
+  //============================================================================
+  printf("Saving results ... \n");
+  string fileSigmaJpsiName = "slice_fit_" + dataset + "/" + dataset + ".root";
+  TFile *fileSigmaJpsi = new TFile(fileSigmaJpsiName.c_str(),"RECREATE");
   histNJpsiCost -> Write();
   histSigmaJpsiCost -> Write();
-  fileSigmaJpsiCost -> Close();
+  histNJpsiPhi -> Write();
+  histSigmaJpsiPhi -> Write();
+  fileSigmaJpsi -> Close();
 }
 //==============================================================================
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -244,8 +277,8 @@ void fit_of_minv(TH1D *histMinv, int counter_cost, int counter_phi, string datas
   string sig = "CB2";
   string bck = "VWG";
   string fit_range = "min";
-  double min_fit_range = 2.;
-  double max_fit_range = 5.;
+  double min_fit_range = 2.1;
+  double max_fit_range = 4.9;
   string tails = "pp8";
   string tails_fix = "yes";
 
@@ -256,14 +289,47 @@ void fit_of_minv(TH1D *histMinv, int counter_cost, int counter_phi, string datas
     if(counter_cost == 1 || counter_cost == (int) CostValues.size() - 2){histMinv -> Rebin(2);}
   }
   if(dataset.compare("2pt4") == 0){
-    if(counter_cost == 1 || counter_cost == (int) CostValues.size() - 2){histMinv -> Rebin(2);}
+    //if(counter_cost == 1 || counter_cost == (int) CostValues.size() - 2){histMinv -> Rebin(2);}
   }
   if(dataset.compare("6pt12") == 0){histMinv -> Rebin(2);}
-  if(dataset.compare("6pt10") == 0){histMinv -> Rebin(2);}
+  //if(dataset.compare("6pt10") == 0){histMinv -> Rebin(2);}
   if(dataset.compare("4pt7") == 0){histMinv -> Rebin(2);}
   if(dataset.compare("7pt10") == 0){histMinv -> Rebin(2);}
-  if(dataset.compare("4pt6") == 0){histMinv -> Rebin(2);}
+  //if(dataset.compare("4pt6") == 0){histMinv -> Rebin(2);}
 
+  //============================================================================
+  // FIT STARTING PARAMETERS
+  //============================================================================
+  double par_bck[4], par_signal[8];
+  if(dataset == "2pt4"){
+    par_bck[0] = 500000.; par_bck[1] = 0.6; par_bck[2] = 0.2; par_bck[3] = 0.2;
+    par_signal[0] = 500.; par_signal[1] = 3.096; par_signal[2] = 7.0e-02;
+    par_signal[3] = 1.00011e+00; par_signal[4] = 3.70078e+00; par_signal[5] = 1.68359e+00; par_signal[6] = 3.63002e+00; par_signal[7] = 0.01;
+    string histTmpName = histMinv -> GetName();
+    //if(histTmpName == "HE_11cost20_9phi16"){histMinv -> Rebin(2); min_fit_range = 2.; max_fit_range = 5.; par_bck[2] = 1.;}
+  }
+
+  if(dataset == "4pt6"){
+    par_bck[0] = 500000.; par_bck[1] = 0.6; par_bck[2] = 0.2; par_bck[3] = 0.2;
+    par_signal[0] = 500.; par_signal[1] = 3.096; par_signal[2] = 7.0e-02;
+    par_signal[3] = 1.00011e+00; par_signal[4] = 3.70078e+00; par_signal[5] = 1.68359e+00; par_signal[6] = 3.63002e+00; par_signal[7] = 0.01;
+    string histTmpName = histMinv -> GetName();
+    //if(histTmpName == "HE_11cost20_9phi16"){histMinv -> Rebin(2); min_fit_range = 2.; max_fit_range = 5.; par_bck[2] = 1.;}
+  }
+
+  if(dataset == "6pt10"){
+    par_bck[0] = 500000.; par_bck[1] = 0.6; par_bck[2] = 0.2; par_bck[3] = 0.2;
+    par_signal[0] = 500.; par_signal[1] = 3.096; par_signal[2] = 7.0e-02;
+    par_signal[3] = 1.00011e+00; par_signal[4] = 3.70078e+00; par_signal[5] = 1.68359e+00; par_signal[6] = 3.63002e+00; par_signal[7] = 0.01;
+    string histTmpName = histMinv -> GetName();
+    //if(histTmpName == "HE_11cost20_9phi16"){histMinv -> Rebin(2); min_fit_range = 2.; max_fit_range = 5.; par_bck[2] = 1.;}
+  }
+
+  //double par_bck[4] = {500000.,0.6,0.2,0.2};
+  // Signal
+  //double par_signal[8] = {50000.,3.096,7.0e-02,1.00011e+00,3.70078e+00,1.68359e+00,3.63002e+00,0.01};
+  //double par_signal[8] = {500.,3.096,7.0e-02,1.00011e+00,3.70078e+00,1.68359e+00,3.63002e+00,0.01}; // fot 4 < pT < 7 GeV/c
+  //double par_signal[8] = {50.,3.096,7.0e-02,1.00011e+00,3.70078e+00,1.68359e+00,3.63002e+00,0.01}; // fot 7 < pT < 10 GeV/c
   //============================================================================
   // FIT OF THE BACKGROUND
   //============================================================================
@@ -282,12 +348,10 @@ void fit_of_minv(TH1D *histMinv, int counter_cost, int counter_phi, string datas
     histo_for_bck -> SetBinError(i+1,0);
   }
 
-  //double par_bck[4] = {500000.,0.6,0.4,0.2};
-  double par_bck[4] = {500000.,0.6,0.2,0.2};
   double *par_bck_ptr = par_bck;
 
-  //TF1 *func_bck_VWG = new TF1("func_bck_VWG",Func_VWG,2.2,5.5,4);
-  TF1 *func_bck_VWG = new TF1("func_bck_VWG",Func_VWG,2.1,4.9,4);
+  TF1 *func_bck_VWG = new TF1("func_bck_VWG",Func_VWG,min_fit_range,max_fit_range,4);
+  //TF1 *func_bck_VWG = new TF1("func_bck_VWG",Func_VWG,2.1,4.9,4);
   func_bck_VWG -> SetLineColor(kRed);
   func_bck_VWG -> SetParameters(par_bck);
   histo_for_bck -> Fit(func_bck_VWG,"R0");
@@ -297,15 +361,12 @@ void fit_of_minv(TH1D *histMinv, int counter_cost, int counter_phi, string datas
   //============================================================================
   //double tails_par[4] = {1.012,2.874,2.232,2.924}; //p-A MC COLLISIONS
   //double tails_par[4] = {1.089,3.393,2.097,8.694}; //p-p 8 TeV
-  //double tails_par[4] = {0.98,6.97,1.86,14.99}; //p-p 13 TeV
-  double tails_par[4] = {1.06,3.23,2.55,1.56}; //GEANT 4
+  double tails_par[4] = {0.98,6.97,1.86,14.99}; //p-p 13 TeV
+  //double tails_par[4] = {1.06,3.23,2.55,1.56}; //GEANT 4
   //double tails_par[4] = {0.97,3.98,2.3,3.03}; //GEANT 3
   //============================================================================
   // FIT OF THE JPSI SIGNAL
   //============================================================================
-  //double par_signal[8] = {50000.,3.096,7.0e-02,1.00011e+00,3.70078e+00,1.68359e+00,3.63002e+00,0.01};
-  //double par_signal[8] = {500.,3.096,7.0e-02,1.00011e+00,3.70078e+00,1.68359e+00,3.63002e+00,0.01}; // fot 4 < pT < 7 GeV/c
-  double par_signal[8] = {50.,3.096,7.0e-02,1.00011e+00,3.70078e+00,1.68359e+00,3.63002e+00,0.01}; // fot 7 < pT < 10 GeV/c
 
   TF1 *func_Jpsi_CB2 = new TF1("func_Jpsi_CB2",Func_Jpsi_CB2,2.9,3.2,11);
   func_Jpsi_CB2 -> SetNpx(100000);
@@ -333,9 +394,9 @@ void fit_of_minv(TH1D *histMinv, int counter_cost, int counter_phi, string datas
       func_tot -> SetParameter(4,func_Jpsi_CB2 -> GetParameter(4));
       func_tot -> SetParLimits(4,0,10000000);
       func_tot -> SetParameter(5,3.096);
-      func_tot -> SetParLimits(5,2.7,3.3);
+      func_tot -> SetParLimits(5,2.9,3.2);
       func_tot -> SetParameter(6,7.0e-02);
-      func_tot -> SetParLimits(6,0.,1.);
+      func_tot -> SetParLimits(6,3.0e-02,2.0e-01);
       //func_tot -> SetParLimits(6,5.0e-02,1.2e-01);
       //func_tot -> SetParLimits(6,5.0e-02,9.0e-02); // To be resetted
       //========================================================================
@@ -532,7 +593,7 @@ void fit_of_minv(TH1D *histMinv, int counter_cost, int counter_phi, string datas
   lat7 -> Draw();
 
   string hist_name = dataset + "/" + histMinv -> GetName() + ".png";
-  //string hist_name = "sigma1D_check_" + dataset + "/" + histMinv -> GetName() + ".png";
+  //string hist_name = "slice_fit_" + dataset + "/" + histMinv -> GetName() + ".png";
   c_spectrum -> SaveAs(hist_name.c_str());
   c_spectrum -> Close();
   delete h_spectrum;
