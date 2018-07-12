@@ -77,6 +77,23 @@ void configure_binning(){
   binning_6pt10 -> Write();
   file_6pt10 -> Close();
 
+  //============================================================================
+  const int N_cost_bins_6pt10_test = 19;
+  int min_cost_bin_6pt10_test[N_cost_bins_6pt10_test] = {1,11,16,21,26,31,36,41,45,49,53,57,61,66,71,76,81,86,91};
+  int max_cost_bin_6pt10_test[N_cost_bins_6pt10_test] = {10,15,20,25,30,35,40,44,48,52,56,60,65,70,75,80,,85,90,100};
+
+  const int N_phi_bins_6pt10_test = 10;
+  int min_phi_bin_6pt10_test[N_phi_bins_6pt10_test] = {1,9,17,21,24,26,28,31,35,43};
+  int max_phi_bin_6pt10_test[N_phi_bins_6pt10_test] = {8,16,20,23,25,27,30,34,42,50};
+
+  Binning *binning_6pt10_test = new Binning();
+  binning_6pt10_test -> ConfigureBinValues(N_cost_bins_6pt10_test,min_cost_bin_6pt10_test,max_cost_bin_6pt10_test,N_phi_bins_6pt10_test,min_phi_bin_6pt10_test,max_phi_bin_6pt10_test);
+
+  TFile *file_6pt10_test = new TFile("~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_6pt10_test.root","RECREATE");
+  binning_6pt10_test -> Write();
+  file_6pt10_test -> Close();
+
+  //============================================================================
   // Attempt to have 3 bins in pT
 
   const int N_cost_bins_2pt4 = 17;
@@ -93,6 +110,24 @@ void configure_binning(){
   TFile *file_2pt4 = new TFile("~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_2pt4.root","RECREATE");
   binning_2pt4 -> Write();
   file_2pt4 -> Close();
+
+  //============================================================================
+  const int N_cost_bins_2pt4_test = 19;
+  int min_cost_bin_2pt4_test[N_cost_bins_2pt4_test] = {1,11,16,21,26,31,36,41,45,49,53,57,61,66,71,76,81,86,91};
+  int max_cost_bin_2pt4_test[N_cost_bins_2pt4_test] = {10,15,20,25,30,35,40,44,48,52,56,60,65,70,75,80,,85,90,100};
+
+  const int N_phi_bins_2pt4_test = 10;
+  int min_phi_bin_2pt4_test[N_phi_bins_2pt4_test] = {1,9,17,21,24,26,28,31,35,43};
+  int max_phi_bin_2pt4_test[N_phi_bins_2pt4_test] = {8,16,20,23,25,27,30,34,42,50};
+
+  Binning *binning_2pt4_test = new Binning();
+  binning_2pt4_test -> ConfigureBinValues(N_cost_bins_2pt4_test,min_cost_bin_2pt4_test,max_cost_bin_2pt4_test,N_phi_bins_2pt4_test,min_phi_bin_2pt4_test,max_phi_bin_2pt4_test);
+
+  TFile *file_2pt4_test = new TFile("~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_2pt4_test.root","RECREATE");
+  binning_2pt4_test -> Write();
+  file_2pt4_test -> Close();
+
+  //============================================================================
 
   const int N_cost_bins_4pt7 = 17;
   int min_cost_bin_4pt7[N_cost_bins_4pt7] = {1,11,21,26,31,36,41,45,49,53,57,61,66,71,76,81,91};
@@ -138,6 +173,24 @@ void configure_binning(){
   TFile *file_4pt6 = new TFile("~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_4pt6.root","RECREATE");
   binning_4pt6 -> Write();
   file_4pt6 -> Close();
+
+  //============================================================================
+  const int N_cost_bins_4pt6_test = 19;
+  int min_cost_bin_4pt6_test[N_cost_bins_4pt6_test] = {1,11,16,21,26,31,36,41,45,49,53,57,61,66,71,76,81,86,91};
+  int max_cost_bin_4pt6_test[N_cost_bins_4pt6_test] = {10,15,20,25,30,35,40,44,48,52,56,60,65,70,75,80,,85,90,100};
+
+  const int N_phi_bins_4pt6_test = 10;
+  int min_phi_bin_4pt6_test[N_phi_bins_4pt6_test] = {1,9,17,21,24,26,28,31,35,43};
+  int max_phi_bin_4pt6_test[N_phi_bins_4pt6_test] = {8,16,20,23,25,27,30,34,42,50};
+
+  Binning *binning_4pt6_test = new Binning();
+  binning_4pt6_test -> ConfigureBinValues(N_cost_bins_4pt6_test,min_cost_bin_4pt6_test,max_cost_bin_4pt6_test,N_phi_bins_4pt6_test,min_phi_bin_4pt6_test,max_phi_bin_4pt6_test);
+
+  TFile *file_4pt6_test = new TFile("~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_4pt6_test.root","RECREATE");
+  binning_4pt6_test -> Write();
+  file_4pt6_test -> Close();
+
+  //============================================================================
 
 
 }

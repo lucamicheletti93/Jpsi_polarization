@@ -45,8 +45,8 @@ void helicity_polarization_fit_2D(){
 
   string dataset = "6pt10";
   double PI = TMath::Pi();
-  double min_fit_range_Cost = -0.8;
-  double max_fit_range_Cost = 0.8;
+  double min_fit_range_Cost = -0.6;
+  double max_fit_range_Cost = 0.6;
   double min_fit_range_Phi = 0.502655;
   double max_fit_range_Phi = 2.63894;
 
@@ -54,7 +54,10 @@ void helicity_polarization_fit_2D(){
   //string filenamein = filepathin + dataset + "_new.root";
   //string filenamein = filepathin + dataset + "_sigmaMC.root"; // only for 2 < pT < 6 GeV/c
 
-  string filenamein = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + "free_sigma.root";
+  //string filenamein = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + "free_sigma.root";
+  //string filenamein = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + "fixed_sigma.root";
+  string filenamein = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + "fixed_sigma_test.root";
+  //string filenamein = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + "_test.root";
   TFile *file_N_Jpsi = new TFile(filenamein.c_str());
 
   vector <double> CostValues;
@@ -63,7 +66,8 @@ void helicity_polarization_fit_2D(){
   vector <int> PhiBinsMin, PhiBinsMax;
   vector < vector <double> > CellAreaMatrix;
 
-  string filebinningname = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_" + dataset + ".root";
+  //string filebinningname = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_" + dataset + ".root";
+  string filebinningname = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_" + dataset + "_test.root";
   TFile *filebinning = new TFile(filebinningname.c_str(),"READ");
   Binning *binning = (Binning*) filebinning -> Get("Binning");
   CostValues = binning -> GetCostValues();
@@ -76,9 +80,6 @@ void helicity_polarization_fit_2D(){
   const int NPhiBins = PhiValues.size() - 1;
 
   CellAreaMatrix = binning -> GetCellAreaMatrix();
-
-  //binning -> PrintBinValues();
-  //return;
 
   const int NCostLines = NCostBins - 1;
   TLine *line_cost[NCostLines];
@@ -114,11 +115,14 @@ void helicity_polarization_fit_2D(){
   //============================================================================
   printf("---> Reading the the Acc X Eff and projecting ... \n");
   //============================================================================
-  string fileAccxEffName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/NEW_GIT_OUTPUT/accxeff_" + dataset + ".root";
+  //string fileAccxEffName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/NEW_GIT_OUTPUT/accxeff_" + dataset + ".root";
+  string fileAccxEffName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/NEW_GIT_OUTPUT/accxeff_" + dataset + "_test.root";
   TFile *accxeff_file = new TFile(fileAccxEffName.c_str(),"READ");
   //string histo_accxeff_name = "hist_accxeff_HE_" + dataset + "_rebin";
   string histo_accxeff_name = "hist_accxeff_HE_rebin";
   TH2D *hist_accxeff_HE_NOpol = (TH2D*) accxeff_file -> Get(histo_accxeff_name.c_str());
+  TCanvas *c_accxeff_HE = new TCanvas("c_accxeff_HE","c_accxeff_HE",4,132,1024,768);
+  hist_accxeff_HE_NOpol -> Draw("COLZtext");
 
   //TH1D *proj_Cost_accxeff_HE_NOpol = (TH1D*) accxeff_file -> Get("proj_Cost_HE_rebin");
   //TH1D *proj_Phi_accxeff_HE_NOpol = (TH1D*) accxeff_file -> Get("proj_Phi_HE_rebin");
@@ -141,7 +145,7 @@ void helicity_polarization_fit_2D(){
   TCanvas *c_accxeff = new TCanvas("c_accxeff","c_accxeff",4,132,1024,768);
   TGaxis::SetMaxDigits(2);
   h_grid -> Draw();
-  hist_accxeff_HE_NOpol_clone -> Draw("COLZsame");
+  hist_accxeff_HE_NOpol_clone -> Draw("COLZtextsame");
   for(int i = 0;i < NCostLines;i++) line_cost[i] -> Draw("same");
   for(int i = 0;i < NPhiLines;i++) line_phi[i] -> Draw("same");
 
@@ -175,6 +179,9 @@ void helicity_polarization_fit_2D(){
   hist_N_Jpsi_HE_ANAC -> Sumw2();
   hist_N_Jpsi_HE_ANAC -> Divide(hist_N_Jpsi_HE_AN,hist_accxeff_HE_NOpol,1,1);
   //printf("%3.2f +- %3.2f \n",hist_N_Jpsi_HE_ANAC -> GetBinContent(4,4),hist_N_Jpsi_HE_ANAC -> GetBinError(4,4));
+
+  TCanvas *c_N_Jpsi_HE_ANAC_HE = new TCanvas("c_N_Jpsi_HE_ANAC_HE","c_N_Jpsi_HE_ANAC_HE",4,132,1024,768);
+  hist_N_Jpsi_HE_ANAC -> Draw("COLZtext");
 
   TH2D *hist_N_Jpsi_HE_ANACX2 = (TH2D*) hist_N_Jpsi_HE_ANAC -> Clone("hist_N_Jpsi_HE_ANACX2");
   //hist_N_Jpsi_HE_ANACX2 -> SetTitle("N_{J/#psi}/(A#times#epsilon #upoint #Deltacos#it{#theta} #upoint #Delta#it{#varphi}) #chi^{2} fit");
@@ -249,7 +256,7 @@ void helicity_polarization_fit_2D(){
 
   //============================================================================
 
-  TF2 *func2D_W_HE_LW = new TF2("func2D_W_HE_LW",Func_W,min_fit_range_Cost,max_fit_range_Cost,min_fit_range_Phi,max_fit_range_Phi,4);
+  /*TF2 *func2D_W_HE_LW = new TF2("func2D_W_HE_LW",Func_W,min_fit_range_Cost,max_fit_range_Cost,min_fit_range_Phi,max_fit_range_Phi,4);
   func2D_W_HE_LW -> SetParameter(0,1000);
   func2D_W_HE_LW -> SetParName(0,"N");
   func2D_W_HE_LW -> SetParameter(1,0);
@@ -262,7 +269,7 @@ void helicity_polarization_fit_2D(){
 
   TCanvas *c_fit2D_HE_LW = new TCanvas("c_fit2D_HE_LW","c_fit2D_HE_LW",4,132,1024,768);
   hist_N_Jpsi_HE_ANACLW -> Draw("COLZ");
-  func2D_W_HE_LW -> Draw("same");
+  func2D_W_HE_LW -> Draw("same");*/
 
   /*double central_binx;
   double central_biny;
@@ -278,7 +285,7 @@ void helicity_polarization_fit_2D(){
 
   //============================================================================
 
-  TF1 *func1D_Cost_W_HE_LW = new TF1("func1D_Cost_W_HE_LW",Func_cost,min_fit_range_Cost,max_fit_range_Cost,2);
+  /*TF1 *func1D_Cost_W_HE_LW = new TF1("func1D_Cost_W_HE_LW",Func_cost,min_fit_range_Cost,max_fit_range_Cost,2);
   func1D_Cost_W_HE_LW -> SetParameter(0,1000);
   func1D_Cost_W_HE_LW -> SetParName(0,"N");
   func1D_Cost_W_HE_LW -> SetParameter(1,0);
@@ -288,7 +295,7 @@ void helicity_polarization_fit_2D(){
   TCanvas *c_fit1D_2pt6_HE_LW = new TCanvas("c_fit1D_2pt6_HE_LW","c_fit1D_2pt6_HE_LW",4,132,1024,768);
   //proj_Cost_N_Jpsi_2pt6_HE_ANACLW -> Draw();
   proj2D_Cost_N_Jpsi_HE_ANACLW -> Draw();
-  func1D_Cost_W_HE_LW -> Draw("same");
+  func1D_Cost_W_HE_LW -> Draw("same");*/
 
 }
 ////////////////////////////////////////////////////////////////////////////////
