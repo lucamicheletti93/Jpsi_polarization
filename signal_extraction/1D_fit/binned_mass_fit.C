@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
+#include <sstream>
 
 #include <TROOT.h>
 #include <TMinuit.h>
@@ -39,8 +40,8 @@ Double_t Func_Psi2s_CB2(Double_t *, Double_t *);
 Double_t Func_Psi2s_CB2_fix(Double_t *, Double_t *);
 Double_t Func_tot(Double_t *, Double_t *);
 
-void single_histo_fit();
-void loop_on_histos();
+void single_histo_fit(int, int);
+void loop_on_histos(int, int);
 void fit_of_minv(TH1D *, int, int, string, string);
 
 double PI = TMath::Pi();
@@ -55,17 +56,36 @@ vector <double> PhiValues;
 //==============================================================================
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //==============================================================================
-void single_histo_fit(){
+void single_histo_fit(int ptMin, int ptMax){
+  //============================================================================
+  printf("---> Setting main quantities ... \n");
+  //============================================================================
+  gStyle -> SetOptStat(0);
+  double PI = TMath::Pi();
 
+  ostringstream convertPtMin;
+  convertPtMin << ptMin;
+  string strPtMin =  convertPtMin.str();
+
+  ostringstream convertPtMax;
+  convertPtMax << ptMax;
+  string strPtMax =  convertPtMax.str();
+
+  string dataset = strPtMin + "pt" + strPtMax;
+  string nameOption = "_test";
+
+  string fileBinningName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_" + dataset + nameOption + ".root";
+  string fileInputName = "/home/luca/GITHUB/Jpsi_polarization/2D_approach/data_analysis/signal_extraction/" + dataset + nameOption + ".root";
+  string outputDir = "No outputDir";
+
+  TFile *fileBinning = new TFile(fileBinningName.c_str(),"READ");
+  TFile *fileInput = new TFile(fileInputName.c_str());
+  //============================================================================
+  printf("---> Setting histograms bins ... \n");
+  //============================================================================
   vector <int> CostBinsMin, CostBinsMax;
   vector <int> PhiBinsMin, PhiBinsMax;
 
-  string dataset = "6pt10";
-  string fileInputName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/mass_histos_cost_phi_" + dataset + ".root";
-  TFile *fileInput = new TFile(fileInputName.c_str());
-
-  string fileBinningName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_" + dataset + ".root";
-  TFile *fileBinning = new TFile(fileBinningName.c_str(),"READ");
   Binning *binning = (Binning*) fileBinning -> Get("Binning");
   CostValues = binning -> GetCostValues();
   CostBinsMin = binning -> GetCostBinsMin();
@@ -76,49 +96,55 @@ void single_histo_fit(){
   PhiBinsMax = binning -> GetPhiBinsMax();
   const int NPhiBins = PhiValues.size() - 1;
 
-  //TH1D *histMinv = (TH1D*) fileInput -> Get("HE_11cost20_17phi20");
-  TH1D *histMinv = (TH1D*) fileInput -> Get("HE_11cost20_35phi42");
+  TH1D *histMinv = (TH1D*) fileInput -> Get("histCost_4");
   histMinv -> SetMarkerStyle(20);
   histMinv -> SetMarkerSize(0.7);
-  string outputDir = "No outputDir";
   fit_of_minv(histMinv,1,1,dataset,outputDir);
 }
 //==============================================================================
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //==============================================================================
-void loop_on_histos(){
-
+void loop_on_histos(int ptMin, int ptMax){
   //============================================================================
   printf("---> Setting main quantities ... \n");
   //============================================================================
-  string dataset = "4pt6";
-  //string plotsDirectory = "mkdir binned_1D_" + dataset;
-  string plotsDirectory = "mkdir binned_1D_" + dataset + "_test";
+  gStyle -> SetOptStat(0);
+  double PI = TMath::Pi();
+
+  ostringstream convertPtMin;
+  convertPtMin << ptMin;
+  string strPtMin =  convertPtMin.str();
+
+  ostringstream convertPtMax;
+  convertPtMax << ptMax;
+  string strPtMax =  convertPtMax.str();
+
+  string dataset = strPtMin + "pt" + strPtMax;
+  string nameOption = "_test";
+
+  string plotsDirectory = "mkdir binned_1D_" + dataset + nameOption;
   gSystem -> Exec(plotsDirectory.c_str());
-  //string fileInputName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/mass_histos_cost_phi_" + dataset + ".root";
-  //string fileInputName = "/home/luca/GITHUB/Jpsi_polarization/2D_approach/data_analysis/signal_extraction/" + dataset + ".root";
-  string fileInputName = "/home/luca/GITHUB/Jpsi_polarization/2D_approach/data_analysis/signal_extraction/" + dataset + "_test.root";
+
+  string fileBinningName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_" + dataset + nameOption + ".root";
+  string fileInputName = "/home/luca/GITHUB/Jpsi_polarization/2D_approach/data_analysis/signal_extraction/" + dataset + nameOption + ".root";
+  string fileOutputName = "binned_1D_" + dataset + nameOption + "/" + dataset + ".root";
+
+  TFile *fileBinning = new TFile(fileBinningName.c_str(),"READ");
   TFile *fileInput = new TFile(fileInputName.c_str());
 
   if(dataset == "0pt12"){
     string outputDir = "binned_1D_" + dataset;
     TH1D *histMinv = (TH1D*) fileInput -> Get("histIntegrated");
     fit_of_minv(histMinv,100,100,dataset,outputDir);
-    //histMinv -> Draw();
     return;
   }
 
   //============================================================================
   printf("---> Setting histograms bins ... \n");
   //============================================================================
-  gStyle -> SetOptStat(0);
-
   vector <int> CostBinsMin, CostBinsMax;
   vector <int> PhiBinsMin, PhiBinsMax;
 
-  //string fileBinningName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_" + dataset + ".root";
-  string fileBinningName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_" + dataset + "_test.root";
-  TFile *fileBinning = new TFile(fileBinningName.c_str(),"READ");
   Binning *binning = (Binning*) fileBinning -> Get("Binning");
   CostValues = binning -> GetCostValues();
   CostBinsMin = binning -> GetCostBinsMin();
@@ -130,7 +156,6 @@ void loop_on_histos(){
   const int NPhiBins = PhiValues.size() - 1;
 
   binning -> PrintBinValues();
-  fileInput -> ls();
 
   char histMinvName[100];
   vector <string> fit_errors;
@@ -168,8 +193,7 @@ void loop_on_histos(){
     sprintf(histMinvName,"histCost_%i",i);
     TH1D *histMinvSliceCost = (TH1D*) fileInput -> Get(histMinvName);
     histMinvSliceCost -> SetName(Form("HE_%icost%i",CostBinsMin[i],CostBinsMax[i]));
-    //string outputDir = "binned_1D_" + dataset;
-    string outputDir = "binned_1D_" + dataset + "_test";
+    string outputDir = "binned_1D_" + dataset + nameOption;
     fit_of_minv(histMinvSliceCost,i,100,dataset,outputDir);
     histMinvSliceCost -> Draw();
     histNJpsiCost -> SetBinContent(i+1,nJpsi);
@@ -206,8 +230,7 @@ void loop_on_histos(){
     sprintf(histMinvName,"histPhi_%i",i);
     TH1D *histMinvSlicePhi = (TH1D*) fileInput -> Get(histMinvName);
     histMinvSlicePhi -> SetName(Form("HE_%iphi%i",PhiBinsMin[i],PhiBinsMax[i]));
-    //string outputDir = "binned_1D_" + dataset;
-    string outputDir = "binned_1D_" + dataset + "_test";
+    string outputDir = "binned_1D_" + dataset + nameOption;
     fit_of_minv(histMinvSlicePhi,100,i,dataset,outputDir);
     histNJpsiPhi -> SetBinContent(i+1,nJpsi);
     histNJpsiPhi -> SetBinError(i+1,statJpsi);
@@ -218,19 +241,20 @@ void loop_on_histos(){
   //============================================================================
   printf("---> Saving results ... \n");
   //============================================================================
-  //string fileSigmaJpsiName = "binned_1D_" + dataset + "/" + dataset + ".root";
-  string fileSigmaJpsiName = "binned_1D_" + dataset + "_test/" + dataset + ".root";
-  TFile *fileSigmaJpsi = new TFile(fileSigmaJpsiName.c_str(),"RECREATE");
+  TFile *fileOutput = new TFile(fileOutputName.c_str(),"RECREATE");
   histNJpsiCost -> Write();
   histSigmaJpsiCost -> Write();
   histNJpsiPhi -> Write();
   histSigmaJpsiPhi -> Write();
-  fileSigmaJpsi -> Close();
+  fileOutput -> Close();
 }
 //==============================================================================
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //==============================================================================
 void fit_of_minv(TH1D *histMinv, int counter_cost, int counter_phi, string dataset, string outputDir){
+
+  gStyle -> SetOptStat(0);
+  TGaxis::SetMaxDigits(2);
 
   string sig = "CB2";
   string bck = "VWG";
@@ -239,21 +263,6 @@ void fit_of_minv(TH1D *histMinv, int counter_cost, int counter_phi, string datas
   double max_fit_range = 4.9;
   string tails = "pp8";
   string tails_fix = "yes";
-
-  gStyle -> SetOptStat(0);
-  TGaxis::SetMaxDigits(2);
-
-  if(dataset.compare("2pt6") == 0){
-    if(counter_cost == 1 || counter_cost == (int) CostValues.size() - 2){histMinv -> Rebin(2);}
-  }
-  if(dataset.compare("2pt4") == 0){
-    //if(counter_cost == 1 || counter_cost == (int) CostValues.size() - 2){histMinv -> Rebin(2);}
-  }
-  if(dataset.compare("6pt12") == 0){histMinv -> Rebin(2);}
-  //if(dataset.compare("6pt10") == 0){histMinv -> Rebin(2);}
-  if(dataset.compare("4pt7") == 0){histMinv -> Rebin(2);}
-  if(dataset.compare("7pt10") == 0){histMinv -> Rebin(2);}
-  //if(dataset.compare("4pt6") == 0){histMinv -> Rebin(2);}
 
   //============================================================================
   // FIT STARTING PARAMETERS
@@ -402,7 +411,7 @@ void fit_of_minv(TH1D *histMinv, int counter_cost, int counter_phi, string datas
       //func_tot -> SetParameter(11,func_Jpsi_CB2 -> GetParameter(11));
     }
     else{func_tot -> SetParameters(func_tot -> GetParameters());}
-    fit_ptr = (TFitResultPtr) histMinv -> Fit(func_tot,"RLS0");
+    fit_ptr = (TFitResultPtr) histMinv -> Fit(func_tot,"RLS");
     if(gMinuit->fCstatu.Contains("CONVERGED")) break;
   }
 

@@ -53,19 +53,26 @@ void accxeff(int pt_min, int pt_max){
   string str_pt_max =  convert_pt_max.str();
 
   string dataset = str_pt_min + "pt" + str_pt_max;
-  //string fileBinningName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_" + dataset + ".root";
-  string fileBinningName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_" + dataset + "_test.root";
+  string nameOption = "_test";
+
+  string fileBinningName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_" + dataset + nameOption + ".root";
+  string fileInputName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/GIT_OUTPUT/HistosFromOfficialTree_Jpsi_PbPb_Nopol_TH3rec.root";
+  string fileInputName1DBinned = "/home/luca/GITHUB/Jpsi_polarization/2D_approach/data_analysis/signal_extraction/1D_fit/binned_1D_" + dataset + nameOption + "/" + dataset + ".root";
+  string fileSigmaName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/NEW_GIT_OUTPUT/sigma_Jpsi_" + dataset + nameOption + ".root";
+  string fileOutputName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/NEW_GIT_OUTPUT/accxeff_" + dataset + nameOption + ".root";
+
+  TFile *fileBinning = new TFile(fileBinningName.c_str(),"READ");
+  TFile *fileInput = new TFile(fileInputName.c_str(),"READ");
 
   //============================================================================
   printf("---> Reading the binning file ... \n");
   //============================================================================
-  TFile *fileBinning = new TFile(fileBinningName.c_str(),"READ");
-  Binning *binning = (Binning*) fileBinning -> Get("Binning");
-
   vector <double> CostValues;
   vector <double> PhiValues;
   vector <int> CostBinsMin, CostBinsMax;
   vector <int> PhiBinsMin, PhiBinsMax;
+
+  Binning *binning = (Binning*) fileBinning -> Get("Binning");
   CostValues = binning -> GetCostValues();
   CostBinsMin = binning -> GetCostBinsMin();
   CostBinsMax = binning -> GetCostBinsMax();
@@ -75,9 +82,7 @@ void accxeff(int pt_min, int pt_max){
   PhiBinsMax = binning -> GetPhiBinsMax();
   const int NPhiBins = PhiValues.size() - 1;
 
-  string fileNameInput = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/GIT_OUTPUT/HistosFromOfficialTree_Jpsi_PbPb_Nopol_TH3rec.root";
-  printf("Opening %s ... \n",fileNameInput.c_str());
-  TFile *fileInput = new TFile(fileNameInput.c_str(),"READ");
+  printf("Opening %s ... \n",fileInputName.c_str());
 
   //============================================================================
   printf("---> Defining the pT ranges ... \n");
@@ -223,7 +228,6 @@ void accxeff(int pt_min, int pt_max){
   //============================================================================
   printf("-> Fit along Phi ... \n");
   //============================================================================
-
   TH1D *histSigmaJpsiPhi = new TH1D("histSigmaJpsiPhi","",NPhiBins,&PhiValues[0]);
   for(int i = 1;i < NPhiBins-1;i++){
     TH1D *histMassIntegrated = new TH1D("histMassIntegrated","",120,2,5);
@@ -244,10 +248,7 @@ void accxeff(int pt_min, int pt_max){
   //============================================================================
   printf("---> Drawing J/psi sigma ... \n");
   //============================================================================
-  //string fileInputName1DBinned = "/home/luca/GITHUB/Jpsi_polarization/2D_approach/data_analysis/signal_extraction/1D_fit/binned_1D_" + dataset + "/" + dataset + ".root";
-  string fileInputName1DBinned = "/home/luca/GITHUB/Jpsi_polarization/2D_approach/data_analysis/signal_extraction/1D_fit/binned_1D_" + dataset + "_test/" + dataset + ".root";
-  TFile *fileInput1DBinned = new TFile(fileInputName1DBinned.c_str());
-
+  TFile *fileInput1DBinned = new TFile(fileInputName1DBinned.c_str(),"READ");
   TCanvas *cSigmaJpsi = new TCanvas("cSigmaJpsi","cSigmaJpsi",20,20,600,600);
   cSigmaJpsi -> Divide(2,2);
 
@@ -381,9 +382,8 @@ void accxeff(int pt_min, int pt_max){
   //============================================================================
   printf("---> Saving sigma Jpsi ... \n");
   //============================================================================
-  string fileNameSigma = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/NEW_GIT_OUTPUT/sigma_Jpsi_" + dataset + "_test.root";
-  printf("Opening %s ... \n",fileNameSigma.c_str());
-  TFile *fileSigma = new TFile(fileNameSigma.c_str(),"RECREATE");
+  printf("Saving J/psi width in %s ... \n",fileSigmaName.c_str());
+  TFile *fileSigma = new TFile(fileSigmaName.c_str(),"RECREATE");
   histSigmaJpsi -> Write();
   fileSigma -> Close();
 
@@ -436,13 +436,11 @@ void accxeff(int pt_min, int pt_max){
   //============================================================================
   printf("---> Saving Acc X Eff ... \n");
   //============================================================================
-  string fileNameOutput = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/NEW_GIT_OUTPUT/accxeff_" + dataset + "_test.root";
-  printf("Opening %s ... \n",fileNameOutput.c_str());
-  TFile *fileOutput = new TFile(fileNameOutput.c_str(),"RECREATE");
+  printf("Saving Acc x Eff in %s ... \n",fileOutputName.c_str());
+  TFile *fileOutput = new TFile(fileOutputName.c_str(),"RECREATE");
   hist_accxeff_HE -> Write();
   hist_accxeff_HE_rebin -> Write();
   fileOutput -> Close();
-
 }
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////

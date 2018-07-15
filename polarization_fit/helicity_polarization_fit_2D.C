@@ -1,5 +1,8 @@
 #if !defined(__CINT__) || defined(__MAKECINT__)
 #include <stdio.h>
+#include <string>
+#include <vector>
+#include <sstream>
 
 #include <TROOT.h>
 #include <TMinuit.h>
@@ -33,43 +36,58 @@ double Func_W(double *, double *);
 double Func_cost(double *, double *);
 double Func_phi(double *, double *);
 
-void helicity_polarization_fit_2D(){
-  //gSystem -> Load("Binning_cxx.so");
-
+void helicity_polarization_fit_2D(int ptMin, int ptMax){
   //============================================================================
   printf("---> Setting main quantities ... \n");
   //============================================================================
   gStyle -> SetOptStat(0);
   gStyle -> SetOptFit(1);
   TGaxis::SetMaxDigits(2);
-
-  string dataset = "6pt10";
   double PI = TMath::Pi();
-  double min_fit_range_Cost = -0.6;
-  double max_fit_range_Cost = 0.6;
+
+  ostringstream convertPtMin;
+  convertPtMin << ptMin;
+  string strPtMin =  convertPtMin.str();
+
+  ostringstream convertPtMax;
+  convertPtMax << ptMax;
+  string strPtMax =  convertPtMax.str();
+
+  string dataset = strPtMin + "pt" + strPtMax;
+  string nameOption = "_test";
+
+  double min_fit_range_Cost = -0.7;
+  double max_fit_range_Cost = 0.7;
   double min_fit_range_Phi = 0.502655;
   double max_fit_range_Phi = 2.63894;
 
+  string fileBinningName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_" + dataset + nameOption + ".root";
+  //string fileNJpsiName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + "fixed_sigma" + nameOption + ".root";
+  string fileNJpsiName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + nameOption + ".root";
+  string fileAccxEffName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/NEW_GIT_OUTPUT/accxeff_" + dataset + nameOption + ".root";
+
   //string filepathin = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/GIT_OUTPUT/N_Jpsi_";
-  //string filenamein = filepathin + dataset + "_new.root";
-  //string filenamein = filepathin + dataset + "_sigmaMC.root"; // only for 2 < pT < 6 GeV/c
+  //string fileNJpsiName = filepathin + dataset + "_new.root";
+  //string fileNJpsiName = filepathin + dataset + "_sigmaMC.root"; // only for 2 < pT < 6 GeV/c
 
-  //string filenamein = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + "free_sigma.root";
-  //string filenamein = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + "fixed_sigma.root";
-  string filenamein = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + "fixed_sigma_test.root";
-  //string filenamein = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + "_test.root";
-  TFile *file_N_Jpsi = new TFile(filenamein.c_str());
+  //string fileNJpsiName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + "free_sigma.root";
+  //string fileNJpsiName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + "fixed_sigma.root";
+  //string fileNJpsiName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + "fixed_sigma_test.root";
+  //string fileNJpsiName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + "_test.root";
+  TFile *fileBinning = new TFile(fileBinningName.c_str(),"READ");
+  TFile *fileNJpsi = new TFile(fileNJpsiName.c_str(),"READ");
+  TFile *fileAccxEff = new TFile(fileAccxEffName.c_str(),"READ");
 
+  //============================================================================
+  printf("---> Setting histograms bins ... \n");
+  //============================================================================
   vector <double> CostValues;
   vector <double> PhiValues;
   vector <int> CostBinsMin, CostBinsMax;
   vector <int> PhiBinsMin, PhiBinsMax;
   vector < vector <double> > CellAreaMatrix;
 
-  //string filebinningname = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_" + dataset + ".root";
-  string filebinningname = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_" + dataset + "_test.root";
-  TFile *filebinning = new TFile(filebinningname.c_str(),"READ");
-  Binning *binning = (Binning*) filebinning -> Get("Binning");
+  Binning *binning = (Binning*) fileBinning -> Get("Binning");
   CostValues = binning -> GetCostValues();
   CostBinsMin = binning -> GetCostBinsMin();
   CostBinsMax = binning -> GetCostBinsMax();
@@ -89,10 +107,6 @@ void helicity_polarization_fit_2D(){
   TLine *line_phi[NPhiLines];
   for(int i = 0;i < NPhiLines;i++){line_phi[i] = new TLine(-1,PhiValues[i+1],1,PhiValues[i+1]);}
 
-  //for(int i = 0;i < N_cost_bins;i++){
-    //width_cost[i] = ((max_cost - min_cost)/(double) N_TH3_cost_bins)*(bins_cost[i+1] - bins_cost[i]);
-  //}
-
   TH2D *h_grid = new TH2D("h_grid","",100,-1,1,50,0,PI);
   h_grid -> GetXaxis() -> SetTitle("cos#it{#theta}^{HX}");
   h_grid -> GetYaxis() -> SetTitle("#it{#varphi}^{HX}");
@@ -100,7 +114,7 @@ void helicity_polarization_fit_2D(){
   //============================================================================
   printf("---> Reading the the file.root in ... \n");
   //============================================================================
-  TH2D *hist_N_Jpsi_HE = (TH2D*) file_N_Jpsi -> Get("histNJpsi");
+  TH2D *hist_N_Jpsi_HE = (TH2D*) fileNJpsi -> Get("histNJpsi");
   //TH1D *proj_Cost_N_Jpsi_HE = (TH1D*) hist_N_Jpsi_HE -> ProjectionX("proj_Cost_N_Jpsi_HE");
   //TH1D *proj_Phi_N_Jpsi_HE = (TH1D*) hist_N_Jpsi_HE -> ProjectionY("proj_Phi_N_Jpsi_HE");
   //printf("%3.2f +- %3.2f \n",hist_N_Jpsi_HE -> GetBinContent(4,4),hist_N_Jpsi_HE -> GetBinError(4,4));
@@ -116,23 +130,21 @@ void helicity_polarization_fit_2D(){
   printf("---> Reading the the Acc X Eff and projecting ... \n");
   //============================================================================
   //string fileAccxEffName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/NEW_GIT_OUTPUT/accxeff_" + dataset + ".root";
-  string fileAccxEffName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/NEW_GIT_OUTPUT/accxeff_" + dataset + "_test.root";
-  TFile *accxeff_file = new TFile(fileAccxEffName.c_str(),"READ");
-  //string histo_accxeff_name = "hist_accxeff_HE_" + dataset + "_rebin";
-  string histo_accxeff_name = "hist_accxeff_HE_rebin";
-  TH2D *hist_accxeff_HE_NOpol = (TH2D*) accxeff_file -> Get(histo_accxeff_name.c_str());
+  //string histoAccxEffName = "hist_accxeff_HE_" + dataset + "_rebin";
+  string histoAccxEffName = "hist_accxeff_HE_rebin";
+  TH2D *hist_accxeff_HE_NOpol = (TH2D*) fileAccxEff -> Get(histoAccxEffName.c_str());
   TCanvas *c_accxeff_HE = new TCanvas("c_accxeff_HE","c_accxeff_HE",4,132,1024,768);
   hist_accxeff_HE_NOpol -> Draw("COLZtext");
 
-  //TH1D *proj_Cost_accxeff_HE_NOpol = (TH1D*) accxeff_file -> Get("proj_Cost_HE_rebin");
-  //TH1D *proj_Phi_accxeff_HE_NOpol = (TH1D*) accxeff_file -> Get("proj_Phi_HE_rebin");
+  //TH1D *proj_Cost_accxeff_HE_NOpol = (TH1D*) fileAccxEff -> Get("proj_Cost_HE_rebin");
+  //TH1D *proj_Phi_accxeff_HE_NOpol = (TH1D*) fileAccxEff -> Get("proj_Phi_HE_rebin");
   //printf("%5.4f +- %5.4f \n",hist_accxeff_HE_NOpol -> GetBinContent(4,4),hist_accxeff_HE_NOpol -> GetBinError(4,4));
 
 
   /*string filePathInput = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/NEW_GIT_OUTPUT/accxeff_";
   string file_accxeff_name = filePathInput + dataset + ".root";
-  TFile *accxeff_file = new TFile(file_accxeff_name.c_str(),"READ");
-  TH2D *hist_accxeff_HE_NOpol = (TH2D*) accxeff_file -> Get("hist_accxeff_HE_rebin");*/
+  TFile *fileAccxEff = new TFile(file_accxeff_name.c_str(),"READ");
+  TH2D *hist_accxeff_HE_NOpol = (TH2D*) fileAccxEff -> Get("hist_accxeff_HE_rebin");*/
 
   TH2D *hist_accxeff_HE_NOpol_clone = new TH2D("hist_accxeff_HE_NOpol_clone","",NCostBins,&CostValues[0],NPhiBins,&PhiValues[0]);
 

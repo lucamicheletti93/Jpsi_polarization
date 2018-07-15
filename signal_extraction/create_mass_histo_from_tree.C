@@ -33,35 +33,33 @@
 #include "/home/luca/GITHUB/Jpsi_polarization/2D_approach/data_analysis/Binning/Binning.h"
 #endif
 
-void create_mass_histo_from_tree(int pt_min, int pt_max){
+void create_mass_histo_from_tree(int ptMin, int ptMax){
   //============================================================================
   printf("---> Setting main quantities ... \n");
   //============================================================================
   gStyle -> SetOptStat(0);
   double PI = TMath::Pi();
 
-  ostringstream convert_pt_min;
-  convert_pt_min << pt_min;
-  string str_pt_min =  convert_pt_min.str();
+  ostringstream convertPtMin;
+  convertPtMin << ptMin;
+  string strPtMin =  convertPtMin.str();
 
-  ostringstream convert_pt_max;
-  convert_pt_max << pt_max;
-  string str_pt_max =  convert_pt_max.str();
+  ostringstream convertPtMax;
+  convertPtMax << ptMax;
+  string strPtMax =  convertPtMax.str();
 
-  string dataset = str_pt_min + "pt" + str_pt_max;
-  //string fileBinningName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_" + dataset + ".root";
-  string fileBinningName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_" + dataset + "_test.root";
-  TFile *fileTree = new TFile("/home/luca/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/TREE_FILTERED/TreeFiltered_full_statistics.root","READ");
+  string dataset = strPtMin + "pt" + strPtMax;
+  string nameOption = "_test";
 
-  //============================================================================
-  printf("---> Defining the output tree and histo ... \n");
-  //============================================================================
-  //string fileOutputName = dataset + ".root";
-  string fileOutputName = dataset + "_test.root";
+  string fileBinningName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_" + dataset + nameOption + ".root";
+  string fileInputName = "/home/luca/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/TREE_FILTERED/TreeFiltered_full_statistics.root";
+  string fileOutputName = dataset + nameOption + ".root";
+
+  TFile *fileInput = new TFile(fileInputName.c_str(),"READ");
   TFile *fileOutput = new TFile(fileOutputName.c_str(),"RECREATE");
   Double_t DimuMass;
 
-  if(pt_min == 0 && pt_max == 12){
+  if(ptMin == 0 && ptMax == 12){
     //============================================================================
     printf("---> Creating the integrated distributions ... \n");
     //============================================================================
@@ -70,15 +68,15 @@ void create_mass_histo_from_tree(int pt_min, int pt_max){
     TH1D *histIntegrated = new TH1D("histIntegrated","histIntegrated",120,2,5);
     char treeName[100];
 
-    double ptTmp = pt_min;
-    while(ptTmp < pt_max){
+    double ptTmp = ptMin;
+    while(ptTmp < ptMax){
       cout << ptTmp << " - " << ptTmp+1 << endl;
 
       sprintf(treeName,"treeHE_%ipt%i",(int) ptTmp,(int) ptTmp+1);
       Double_t DimuMass_unb;
       Double_t CostHE_unb, PhiHE_unb;
 
-      TTree *tree = (TTree*) fileTree -> Get(treeName);
+      TTree *tree = (TTree*) fileInput -> Get(treeName);
       tree -> SetBranchAddress("DimuMass_unb",&DimuMass_unb);
       tree -> SetBranchAddress("CostHE_unb",&CostHE_unb);
       tree -> SetBranchAddress("PhiHE_unb",&PhiHE_unb);
@@ -157,17 +155,16 @@ void create_mass_histo_from_tree(int pt_min, int pt_max){
   //============================================================================
   printf("---> Reading the input tree and filling the output tree ... \n");
   //============================================================================
-  double ptTmp = pt_min;
-  while(ptTmp < pt_max){
+  double ptTmp = ptMin;
+  while(ptTmp < ptMax){
     cout << ptTmp << " - " << ptTmp+1 << endl;
 
     char treeName[100];
     sprintf(treeName,"treeHE_%ipt%i",(int) ptTmp,(int) ptTmp+1);
-    //TTree *tree = (TTree*) fileTree -> Get(Form("treeHE_%ipt%i",ptTmp,ptTmp+1));
     Double_t DimuMass_unb;
     Double_t CostHE_unb, PhiHE_unb;
 
-    TTree *tree = (TTree*) fileTree -> Get(treeName);
+    TTree *tree = (TTree*) fileInput -> Get(treeName);
     tree -> SetBranchAddress("DimuMass_unb",&DimuMass_unb);
     tree -> SetBranchAddress("CostHE_unb",&CostHE_unb);
     tree -> SetBranchAddress("PhiHE_unb",&PhiHE_unb);
