@@ -56,14 +56,14 @@ void helicity_polarization_fit_2D(int ptMin, int ptMax){
   string dataset = strPtMin + "pt" + strPtMax;
   string nameOption = "_test";
 
-  double min_fit_range_Cost = -0.7;
-  double max_fit_range_Cost = 0.7;
+  double min_fit_range_Cost = -0.8;
+  double max_fit_range_Cost = 0.8;
   double min_fit_range_Phi = 0.502655;
   double max_fit_range_Phi = 2.63894;
 
   string fileBinningName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_" + dataset + nameOption + ".root";
-  //string fileNJpsiName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + "fixed_sigma" + nameOption + ".root";
-  string fileNJpsiName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + nameOption + ".root";
+  string fileNJpsiSigmaFixedName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + "_fixed_sigma" + nameOption + ".root";
+  string fileNJpsiSigmaFreeName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + nameOption + ".root";
   string fileAccxEffName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/NEW_GIT_OUTPUT/accxeff_" + dataset + nameOption + ".root";
 
   //string filepathin = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/GIT_OUTPUT/N_Jpsi_";
@@ -75,7 +75,8 @@ void helicity_polarization_fit_2D(int ptMin, int ptMax){
   //string fileNJpsiName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + "fixed_sigma_test.root";
   //string fileNJpsiName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + "_test.root";
   TFile *fileBinning = new TFile(fileBinningName.c_str(),"READ");
-  TFile *fileNJpsi = new TFile(fileNJpsiName.c_str(),"READ");
+  TFile *fileNJpsiSigmaFixed = new TFile(fileNJpsiSigmaFixedName.c_str(),"READ");
+  TFile *fileNJpsiSigmaFree = new TFile(fileNJpsiSigmaFreeName.c_str(),"READ");
   TFile *fileAccxEff = new TFile(fileAccxEffName.c_str(),"READ");
 
   //============================================================================
@@ -114,15 +115,16 @@ void helicity_polarization_fit_2D(int ptMin, int ptMax){
   //============================================================================
   printf("---> Reading the the file.root in ... \n");
   //============================================================================
-  TH2D *hist_N_Jpsi_HE = (TH2D*) fileNJpsi -> Get("histNJpsi");
-  //TH1D *proj_Cost_N_Jpsi_HE = (TH1D*) hist_N_Jpsi_HE -> ProjectionX("proj_Cost_N_Jpsi_HE");
-  //TH1D *proj_Phi_N_Jpsi_HE = (TH1D*) hist_N_Jpsi_HE -> ProjectionY("proj_Phi_N_Jpsi_HE");
-  //printf("%3.2f +- %3.2f \n",hist_N_Jpsi_HE -> GetBinContent(4,4),hist_N_Jpsi_HE -> GetBinError(4,4));
+  TH2D *histNJpsiSigmaFixed = (TH2D*) fileNJpsiSigmaFixed -> Get("histNJpsi");
+  TH2D *histNJpsiSigmaFree = (TH2D*) fileNJpsiSigmaFree -> Get("histNJpsi");
+  //TH1D *proj_Cost_N_Jpsi_HE = (TH1D*) histNJpsiSigmaFixed -> ProjectionX("proj_Cost_N_Jpsi_HE");
+  //TH1D *proj_Phi_N_Jpsi_HE = (TH1D*) histNJpsiSigmaFixed -> ProjectionY("proj_Phi_N_Jpsi_HE");
+  //printf("%3.2f +- %3.2f \n",histNJpsiSigmaFixed -> GetBinContent(4,4),histNJpsiSigmaFixed -> GetBinError(4,4));
 
   TCanvas *c_N_Jpsi_HE = new TCanvas("c_N_Jpsi_HE","c_N_Jpsi_HE",4,132,1024,768);
   TGaxis::SetMaxDigits(2);
   h_grid -> Draw();
-  hist_N_Jpsi_HE -> Draw("COLZtextsame");
+  histNJpsiSigmaFixed -> Draw("COLZtextsame");
   for(int i = 0;i < NCostLines;i++) line_cost[i] -> Draw("same");
   for(int i = 0;i < NPhiLines;i++) line_phi[i] -> Draw("same");
 
@@ -130,34 +132,34 @@ void helicity_polarization_fit_2D(int ptMin, int ptMax){
   printf("---> Reading the the Acc X Eff and projecting ... \n");
   //============================================================================
   //string fileAccxEffName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/NEW_GIT_OUTPUT/accxeff_" + dataset + ".root";
-  //string histoAccxEffName = "hist_accxeff_HE_" + dataset + "_rebin";
-  string histoAccxEffName = "hist_accxeff_HE_rebin";
-  TH2D *hist_accxeff_HE_NOpol = (TH2D*) fileAccxEff -> Get(histoAccxEffName.c_str());
+  //string histAccxEffName = "hist_accxeff_HE_" + dataset + "_rebin";
+  string histAccxEffName = "hist_accxeff_HE_rebin";
+  TH2D *histAccxEff = (TH2D*) fileAccxEff -> Get(histAccxEffName.c_str());
   TCanvas *c_accxeff_HE = new TCanvas("c_accxeff_HE","c_accxeff_HE",4,132,1024,768);
-  hist_accxeff_HE_NOpol -> Draw("COLZtext");
+  histAccxEff -> Draw("COLZtext");
 
   //TH1D *proj_Cost_accxeff_HE_NOpol = (TH1D*) fileAccxEff -> Get("proj_Cost_HE_rebin");
   //TH1D *proj_Phi_accxeff_HE_NOpol = (TH1D*) fileAccxEff -> Get("proj_Phi_HE_rebin");
-  //printf("%5.4f +- %5.4f \n",hist_accxeff_HE_NOpol -> GetBinContent(4,4),hist_accxeff_HE_NOpol -> GetBinError(4,4));
+  //printf("%5.4f +- %5.4f \n",histAccxEff -> GetBinContent(4,4),histAccxEff -> GetBinError(4,4));
 
 
   /*string filePathInput = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/NEW_GIT_OUTPUT/accxeff_";
   string file_accxeff_name = filePathInput + dataset + ".root";
   TFile *fileAccxEff = new TFile(file_accxeff_name.c_str(),"READ");
-  TH2D *hist_accxeff_HE_NOpol = (TH2D*) fileAccxEff -> Get("hist_accxeff_HE_rebin");*/
+  TH2D *histAccxEff = (TH2D*) fileAccxEff -> Get("hist_accxeff_HE_rebin");*/
 
-  TH2D *hist_accxeff_HE_NOpol_clone = new TH2D("hist_accxeff_HE_NOpol_clone","",NCostBins,&CostValues[0],NPhiBins,&PhiValues[0]);
+  TH2D *histAccxEffClone = new TH2D("histAccxEffClone","",NCostBins,&CostValues[0],NPhiBins,&PhiValues[0]);
 
   for(int i = 1;i < NCostBins-1;i++){
     for(int j = 1;j < NPhiBins-1;j++){
-      hist_accxeff_HE_NOpol_clone -> SetBinContent(i+1,j+1,hist_accxeff_HE_NOpol -> GetBinContent(i+1,j+1));
+      histAccxEffClone -> SetBinContent(i+1,j+1,histAccxEff -> GetBinContent(i+1,j+1));
     }
   }
 
   TCanvas *c_accxeff = new TCanvas("c_accxeff","c_accxeff",4,132,1024,768);
   TGaxis::SetMaxDigits(2);
   h_grid -> Draw();
-  hist_accxeff_HE_NOpol_clone -> Draw("COLZtextsame");
+  histAccxEffClone -> Draw("COLZtextsame");
   for(int i = 0;i < NCostLines;i++) line_cost[i] -> Draw("same");
   for(int i = 0;i < NPhiLines;i++) line_phi[i] -> Draw("same");
 
@@ -165,7 +167,8 @@ void helicity_polarization_fit_2D(int ptMin, int ptMax){
   printf("---> Normalizing the Rebin histo to bin area and projecting ... \n"); // AN = Area Normalized
   //============================================================================
 
-  TH2D *hist_N_Jpsi_HE_AN = new TH2D("hist_N_Jpsi_HE_AN","hist_N_Jpsi_HE_AN",NCostBins,&CostValues[0],NPhiBins,&PhiValues[0]);
+  TH2D *histNJpsiSigmaFixed_AN = new TH2D("histNJpsiSigmaFixed_AN","histNJpsiSigmaFixed_AN",NCostBins,&CostValues[0],NPhiBins,&PhiValues[0]);
+  TH2D *histNJpsiSigmaFree_AN = new TH2D("histNJpsiSigmaFree_AN","histNJpsiSigmaFree_AN",NCostBins,&CostValues[0],NPhiBins,&PhiValues[0]);
   //TH1D *proj_Cost_N_Jpsi_HE_AN = new TH1D("proj_Cost_N_Jpsi_HE_AN","proj_Cost_N_Jpsi_HE_AN",N_cost_bins,value_cost);
   //TH1D *proj_Phi_N_Jpsi_HE_AN = new TH1D("proj_Phi_N_Jpsi_HE_AN","proj_Phi_N_Jpsi_HE_AN",N_phi_bins,value_phi);
 
@@ -177,35 +180,56 @@ void helicity_polarization_fit_2D(int ptMin, int ptMax){
       //proj_Phi_N_Jpsi_HE_AN -> SetBinContent(j+1,(proj_Phi_N_Jpsi_HE -> GetBinContent(j+1))/width_phi[j]);
       //proj_Phi_N_Jpsi_HE_AN -> SetBinError(j+1,(proj_Phi_N_Jpsi_HE -> GetBinError(j+1))/width_phi[j]);
 
-      hist_N_Jpsi_HE_AN -> SetBinContent(i+1,j+1,(hist_N_Jpsi_HE -> GetBinContent(i+1,j+1))/CellAreaMatrix[i][j]);
-      hist_N_Jpsi_HE_AN -> SetBinError(i+1,j+1,(hist_N_Jpsi_HE -> GetBinError(i+1,j+1))/CellAreaMatrix[i][j]);
+      histNJpsiSigmaFixed_AN -> SetBinContent(i+1,j+1,(histNJpsiSigmaFixed -> GetBinContent(i+1,j+1))/CellAreaMatrix[i][j]);
+      histNJpsiSigmaFixed_AN -> SetBinError(i+1,j+1,(histNJpsiSigmaFixed -> GetBinError(i+1,j+1))/CellAreaMatrix[i][j]);
+
+      histNJpsiSigmaFree_AN -> SetBinContent(i+1,j+1,(histNJpsiSigmaFree -> GetBinContent(i+1,j+1))/CellAreaMatrix[i][j]);
+      histNJpsiSigmaFree_AN -> SetBinError(i+1,j+1,(histNJpsiSigmaFree -> GetBinError(i+1,j+1))/CellAreaMatrix[i][j]);
     }
   }
-  //printf("%3.2f +- %3.2f -> [%f] \n",hist_N_Jpsi_HE_AN -> GetBinContent(4,4),hist_N_Jpsi_HE_AN -> GetBinError(4,4),CellAreaMatrix[3][3]);
+  //printf("%3.2f +- %3.2f -> [%f] \n",histNJpsiSigmaFixed_AN -> GetBinContent(4,4),histNJpsiSigmaFixed_AN -> GetBinError(4,4),CellAreaMatrix[3][3]);
 
   //============================================================================
   printf("---> Correcting REC for Acc x Eff ... \n"); // AC = Acceptance Corrected
   //============================================================================
 
-  TH2D *hist_N_Jpsi_HE_ANAC = new TH2D("hist_N_Jpsi_HE_ANAC","hist_N_Jpsi_HE_ANAC",NCostBins,&CostValues[0],NPhiBins,&PhiValues[0]);
-  hist_N_Jpsi_HE_ANAC -> Sumw2();
-  hist_N_Jpsi_HE_ANAC -> Divide(hist_N_Jpsi_HE_AN,hist_accxeff_HE_NOpol,1,1);
-  //printf("%3.2f +- %3.2f \n",hist_N_Jpsi_HE_ANAC -> GetBinContent(4,4),hist_N_Jpsi_HE_ANAC -> GetBinError(4,4));
+  TH2D *histNJpsiSigmaFixed_ANAC = new TH2D("histNJpsiSigmaFixed_ANAC","histNJpsiSigmaFixed_ANAC",NCostBins,&CostValues[0],NPhiBins,&PhiValues[0]);
+  histNJpsiSigmaFixed_ANAC -> Sumw2();
+  histNJpsiSigmaFixed_ANAC -> Divide(histNJpsiSigmaFixed_AN,histAccxEff,1,1);
+  //printf("%3.2f +- %3.2f \n",histNJpsiSigmaFixed_ANAC -> GetBinContent(4,4),histNJpsiSigmaFixed_ANAC -> GetBinError(4,4));
+
+  TH2D *histNJpsiSigmaFree_ANAC = new TH2D("histNJpsiSigmaFree_ANAC","histNJpsiSigmaFree_ANAC",NCostBins,&CostValues[0],NPhiBins,&PhiValues[0]);
+  histNJpsiSigmaFree_ANAC -> Sumw2();
+  histNJpsiSigmaFree_ANAC -> Divide(histNJpsiSigmaFree_AN,histAccxEff,1,1);
 
   TCanvas *c_N_Jpsi_HE_ANAC_HE = new TCanvas("c_N_Jpsi_HE_ANAC_HE","c_N_Jpsi_HE_ANAC_HE",4,132,1024,768);
-  hist_N_Jpsi_HE_ANAC -> Draw("COLZtext");
+  histNJpsiSigmaFixed_ANAC -> Draw("COLZtext");
 
-  TH2D *hist_N_Jpsi_HE_ANACX2 = (TH2D*) hist_N_Jpsi_HE_ANAC -> Clone("hist_N_Jpsi_HE_ANACX2");
-  //hist_N_Jpsi_HE_ANACX2 -> SetTitle("N_{J/#psi}/(A#times#epsilon #upoint #Deltacos#it{#theta} #upoint #Delta#it{#varphi}) #chi^{2} fit");
-  hist_N_Jpsi_HE_ANACX2 -> SetTitle("");
-  TH2D *hist_N_Jpsi_HE_ANACLW = (TH2D*) hist_N_Jpsi_HE_ANAC -> Clone("hist_N_Jpsi_HE_ANACLW");
-  //hist_N_Jpsi_HE_ANACLW -> SetTitle("N_{J/#psi}/(A#times#epsilon #upoint #Deltacos#it{#theta} #upoint #Delta#it{#varphi}) W.L. fit");
-  hist_N_Jpsi_HE_ANACLW -> SetTitle("");
+  TH2D *histNJpsiSigmaFixed_ANACX2 = (TH2D*) histNJpsiSigmaFixed_ANAC -> Clone("histNJpsiSigmaFixed_ANACX2");
+  //histNJpsiSigmaFixed_ANACX2 -> SetTitle("N_{J/#psi}/(A#times#epsilon #upoint #Deltacos#it{#theta} #upoint #Delta#it{#varphi}) #chi^{2} fit");
+  histNJpsiSigmaFixed_ANACX2 -> SetTitle("");
+  TH2D *histNJpsiSigmaFixed_ANACLW = (TH2D*) histNJpsiSigmaFixed_ANAC -> Clone("histNJpsiSigmaFixed_ANACLW");
+  //histNJpsiSigmaFixed_ANACLW -> SetTitle("N_{J/#psi}/(A#times#epsilon #upoint #Deltacos#it{#theta} #upoint #Delta#it{#varphi}) W.L. fit");
+  histNJpsiSigmaFixed_ANACLW -> SetTitle("");
 
-  TH1D *proj2D_Cost_N_Jpsi_HE_ANACX2 = (TH1D*) hist_N_Jpsi_HE_ANAC -> ProjectionX("proj2D_Cost_N_Jpsi_HE_ANACX2");
-  //proj2D_Cost_N_Jpsi_HE_ANACX2 -> SetTitle("N_{J/#psi}/(A#times#epsilon #upoint #Deltacos#it{#theta}) #chi^{2} fit");
-  proj2D_Cost_N_Jpsi_HE_ANACX2 -> SetTitle("");
-  TH1D *proj2D_Cost_N_Jpsi_HE_ANACLW = (TH1D*) hist_N_Jpsi_HE_ANAC -> ProjectionX("proj2D_Cost_N_Jpsi_HE_ANACLW");
+  TH2D *histNJpsiSigmaFree_ANACX2 = (TH2D*) histNJpsiSigmaFree_ANAC -> Clone("histNJpsiSigmaFree_ANACX2");
+  //histNJpsiSigmaFree_ANACX2 -> SetTitle("N_{J/#psi}/(A#times#epsilon #upoint #Deltacos#it{#theta} #upoint #Delta#it{#varphi}) #chi^{2} fit");
+  histNJpsiSigmaFree_ANACX2 -> SetTitle("");
+  TH2D *histNJpsiSigmaFree_ANACLW = (TH2D*) histNJpsiSigmaFree_ANAC -> Clone("histNJpsiSigmaFree_ANACLW");
+  //histNJpsiSigmaFree_ANACLW -> SetTitle("N_{J/#psi}/(A#times#epsilon #upoint #Deltacos#it{#theta} #upoint #Delta#it{#varphi}) W.L. fit");
+  histNJpsiSigmaFree_ANACLW -> SetTitle("");
+
+  TH1D *histNJpsiCostSigmaFixed_ANACX2 = (TH1D*) histNJpsiSigmaFixed_ANAC -> ProjectionX("histNJpsiCostSigmaFixed_ANACX2");
+  //histNJpsiCostSigmaFixed_ANACX2 -> SetTitle("N_{J/#psi}/(A#times#epsilon #upoint #Deltacos#it{#theta}) #chi^{2} fit");
+  histNJpsiCostSigmaFixed_ANACX2 -> SetTitle("");
+  histNJpsiCostSigmaFixed_ANACX2 -> SetLineColor(kBlue);
+
+  TH1D *histNJpsiCostSigmaFree_ANACX2 = (TH1D*) histNJpsiSigmaFree_ANAC -> ProjectionX("histNJpsiCostSigmaFree_ANACX2");
+  //histNJpsiCostSigmaFree_ANACX2 -> SetTitle("N_{J/#psi}/(A#times#epsilon #upoint #Deltacos#it{#theta}) #chi^{2} fit");
+  histNJpsiCostSigmaFree_ANACX2 -> SetTitle("");
+  histNJpsiCostSigmaFree_ANACX2 -> SetLineColor(kRed);
+
+  TH1D *proj2D_Cost_N_Jpsi_HE_ANACLW = (TH1D*) histNJpsiSigmaFixed_ANAC -> ProjectionX("proj2D_Cost_N_Jpsi_HE_ANACLW");
   //proj2D_Cost_N_Jpsi_HE_ANACLW -> SetTitle("N_{J/#psi}/(A#times#epsilon #upoint #Deltacos#it{#theta}) W.L. fit");
   proj2D_Cost_N_Jpsi_HE_ANACLW -> SetTitle("");
 
@@ -227,33 +251,145 @@ void helicity_polarization_fit_2D(int ptMin, int ptMax){
   printf("---> Fitting ... \n");
   //============================================================================
 
-  TF2 *func2D_W_HE_X2 = new TF2("func2D_W_HE_X2",Func_W,min_fit_range_Cost,max_fit_range_Cost,min_fit_range_Phi,max_fit_range_Phi,4);
-  func2D_W_HE_X2 -> SetParameter(0,1000);
-  func2D_W_HE_X2 -> SetParName(0,"N");
-  func2D_W_HE_X2 -> SetParameter(1,0);
-  func2D_W_HE_X2 -> SetParName(1,"#lambda_{#theta}");
-  func2D_W_HE_X2 -> SetParameter(2,0);
-  func2D_W_HE_X2 -> SetParName(2,"#lambda_{#phi}");
-  func2D_W_HE_X2 -> SetParameter(3,0);
-  func2D_W_HE_X2 -> SetParName(3,"#lambda_{#theta#phi}");
-  hist_N_Jpsi_HE_ANACX2 -> Fit(func2D_W_HE_X2,"RSI0");
+  TF2 *func2DSigmaFixedX2 = new TF2("func2DSigmaFixedX2",Func_W,min_fit_range_Cost,max_fit_range_Cost,min_fit_range_Phi,max_fit_range_Phi,4);
+  func2DSigmaFixedX2 -> SetParameter(0,1000);
+  func2DSigmaFixedX2 -> SetParName(0,"N");
+  func2DSigmaFixedX2 -> SetParameter(1,0);
+  func2DSigmaFixedX2 -> SetParName(1,"#lambda_{#theta}");
+  func2DSigmaFixedX2 -> SetParameter(2,0);
+  func2DSigmaFixedX2 -> SetParName(2,"#lambda_{#phi}");
+  func2DSigmaFixedX2 -> SetParameter(3,0);
+  func2DSigmaFixedX2 -> SetParName(3,"#lambda_{#theta#phi}");
+  histNJpsiSigmaFixed_ANACX2 -> Fit(func2DSigmaFixedX2,"RSI0");
 
-  TCanvas *c_fit2D_HE_X2 = new TCanvas("c_fit2D_HE_X2","c_fit2D_HE_X2",4,132,1024,768);
-  hist_N_Jpsi_HE_ANACX2 -> Draw("COLZsame");
-  func2D_W_HE_X2 -> Draw("same");
+  TCanvas *cFit2DSigmaFixedX2 = new TCanvas("cFit2DSigmaFixedX2","cFit2DSigmaFixedX2",4,132,1024,768);
+  histNJpsiSigmaFixed_ANACX2 -> Draw("COLZsame");
+  func2DSigmaFixedX2 -> Draw("same");
+
+  TF2 *func2DSigmaFreeX2 = new TF2("func2DSigmaFreeX2",Func_W,min_fit_range_Cost,max_fit_range_Cost,min_fit_range_Phi,max_fit_range_Phi,4);
+  func2DSigmaFreeX2 -> SetParameter(0,1000);
+  func2DSigmaFreeX2 -> SetParName(0,"N");
+  func2DSigmaFreeX2 -> SetParameter(1,0);
+  func2DSigmaFreeX2 -> SetParName(1,"#lambda_{#theta}");
+  func2DSigmaFreeX2 -> SetParameter(2,0);
+  func2DSigmaFreeX2 -> SetParName(2,"#lambda_{#phi}");
+  func2DSigmaFreeX2 -> SetParameter(3,0);
+  func2DSigmaFreeX2 -> SetParName(3,"#lambda_{#theta#phi}");
+  histNJpsiSigmaFree_ANACX2 -> Fit(func2DSigmaFreeX2,"RSI0");
+
+  TCanvas *cFit2DSigmaFreeX2 = new TCanvas("cFit2DSigmaFreeX2","cFit2DSigmaFreeX2",4,132,1024,768);
+  histNJpsiSigmaFree_ANACX2 -> Draw("COLZsame");
+  func2DSigmaFreeX2 -> Draw("same");
 
   //============================================================================
 
-  TF1 *func1D_Cost_W_HE_X2 = new TF1("func1D_Cost_W_HE_X2",Func_cost,min_fit_range_Cost,max_fit_range_Cost,2);
-  func1D_Cost_W_HE_X2 -> SetParameter(0,1000);
-  func1D_Cost_W_HE_X2 -> SetParName(0,"N");
-  func1D_Cost_W_HE_X2 -> SetParameter(1,0);
-  func1D_Cost_W_HE_X2 -> SetParName(1,"#lambda_{#theta}");
-  proj2D_Cost_N_Jpsi_HE_ANACX2 -> Fit(func1D_Cost_W_HE_X2,"RSI0");
+  TF2 *func2DCostSigmaFixed[3], *func2DCostSigmaFree[3];
+  TF1 *func1DCostSigmaFixed[3], *func1DCostSigmaFree[3];
+  double fitRangeMin[3] = {-0.6,-0.7,-0.8};
+  double fitRangeMax[3] = {0.6,0.7,0.8};
+  TLatex *latLambdaTheta[3];
+  double LTh2DSigmaFixed, errLTh2DSigmaFixed, LTh2DSigmaFree, errLTh2DSigmaFree;
+  double LTh1DSigmaFixed, errLTh1DSigmaFixed, LTh1DSigmaFree, errLTh1DSigmaFree;
 
-  TCanvas *c_fit1D_Cost_HE_X2 = new TCanvas("c_fit1D_Cost_HE_X2","c_fit1D_Cost_HE_X2",4,132,1024,768);
-  proj2D_Cost_N_Jpsi_HE_ANACX2 -> Draw();
-  func1D_Cost_W_HE_X2 -> Draw("same");
+  for(int i = 0;i < 3;i++){
+    func2DCostSigmaFixed[i] = new TF2(Form("func2DCostSigmaFixed%i",i),Func_W,fitRangeMin[i],fitRangeMax[i],min_fit_range_Phi,max_fit_range_Phi,4);
+    func2DCostSigmaFixed[i] -> SetParameter(0,1000);
+    func2DCostSigmaFixed[i] -> SetParName(0,"N");
+    func2DCostSigmaFixed[i] -> SetParameter(1,0);
+    func2DCostSigmaFixed[i] -> SetParName(1,"#lambda_{#theta}");
+    func2DCostSigmaFixed[i] -> SetParameter(2,0);
+    func2DCostSigmaFixed[i] -> SetParName(2,"#lambda_{#phi}");
+    func2DCostSigmaFixed[i] -> SetParameter(3,0);
+    func2DCostSigmaFixed[i] -> SetParName(3,"#lambda_{#theta#phi}");
+    histNJpsiSigmaFixed_ANACX2 -> Fit(func2DCostSigmaFixed[i],"RSI0");
+
+    LTh2DSigmaFixed = func2DCostSigmaFixed[i] -> GetParameter(1);
+    errLTh2DSigmaFixed = func2DCostSigmaFixed[i] -> GetParError(1);
+
+    func1DCostSigmaFixed[i] = new TF1(Form("func1DCostSigmaFixed%i",i),Func_cost,fitRangeMin[i],fitRangeMax[i],2);
+    func1DCostSigmaFixed[i] -> SetParameter(0,1000);
+    func1DCostSigmaFixed[i] -> SetParName(0,"N");
+    func1DCostSigmaFixed[i] -> SetParameter(1,0);
+    func1DCostSigmaFixed[i] -> SetParName(1,"#lambda_{#theta}");
+    func1DCostSigmaFixed[i] -> SetLineColor(kBlue);
+    func1DCostSigmaFixed[i] -> SetLineStyle(i+1);
+    histNJpsiCostSigmaFixed_ANACX2 -> Fit(func1DCostSigmaFixed[i],"RSI0");
+
+    LTh1DSigmaFixed = func1DCostSigmaFixed[i] -> GetParameter(1);
+    errLTh1DSigmaFixed = func1DCostSigmaFixed[i] -> GetParError(1);
+
+    func2DCostSigmaFree[i] = new TF2(Form("func2DCostSigmaFree%i",i),Func_W,fitRangeMin[i],fitRangeMax[i],min_fit_range_Phi,max_fit_range_Phi,4);
+    func2DCostSigmaFree[i] -> SetParameter(0,1000);
+    func2DCostSigmaFree[i] -> SetParName(0,"N");
+    func2DCostSigmaFree[i] -> SetParameter(1,0);
+    func2DCostSigmaFree[i] -> SetParName(1,"#lambda_{#theta}");
+    func2DCostSigmaFree[i] -> SetParameter(2,0);
+    func2DCostSigmaFree[i] -> SetParName(2,"#lambda_{#phi}");
+    func2DCostSigmaFree[i] -> SetParameter(3,0);
+    func2DCostSigmaFree[i] -> SetParName(3,"#lambda_{#theta#phi}");
+    histNJpsiSigmaFree_ANACX2 -> Fit(func2DCostSigmaFree[i],"RSI0");
+
+    LTh2DSigmaFree = func2DCostSigmaFree[i] -> GetParameter(1);
+    errLTh2DSigmaFree = func2DCostSigmaFree[i] -> GetParError(1);
+
+    func1DCostSigmaFree[i] = new TF1(Form("func1DCostSigmaFree%i",i),Func_cost,fitRangeMin[i],fitRangeMax[i],2);
+    func1DCostSigmaFree[i] -> SetParameter(0,1000);
+    func1DCostSigmaFree[i] -> SetParName(0,"N");
+    func1DCostSigmaFree[i] -> SetParameter(1,0);
+    func1DCostSigmaFree[i] -> SetParName(1,"#lambda_{#theta}");
+    func1DCostSigmaFree[i] -> SetLineColor(kRed);
+    func1DCostSigmaFree[i] -> SetLineStyle(i+1);
+    histNJpsiCostSigmaFree_ANACX2 -> Fit(func1DCostSigmaFree[i],"RSI0");
+
+    LTh1DSigmaFree = func1DCostSigmaFree[i] -> GetParameter(1);
+    errLTh1DSigmaFree = func1DCostSigmaFree[i] -> GetParError(1);
+
+    latLambdaTheta[i] = new TLatex(0.18,0.15 + i*0.06,Form("[%2.1f<cos#theta<%2.1f] #color[4]{#lambda_{#theta} = %4.3f #pm %4.3f} (#lambda_{#theta}^{2D} = %4.3f #pm %4.3f) ; #color[2]{#lambda_{#theta} = %4.3f #pm %4.3f} (#lambda_{#theta}^{2D} = %4.3f #pm %4.3f)",fitRangeMin[i],fitRangeMax[i],LTh1DSigmaFixed,errLTh1DSigmaFixed,LTh2DSigmaFixed,errLTh2DSigmaFixed,LTh1DSigmaFree,errLTh1DSigmaFree,LTh2DSigmaFree,errLTh2DSigmaFree));
+    latLambdaTheta[i] -> SetTextSize(0.02);
+    latLambdaTheta[i] -> SetNDC();
+    latLambdaTheta[i] -> SetTextFont(42);
+  }
+
+  TLegend *legNJpsiCost = new TLegend(0.42,0.7,0.65,0.8,"","brNDC");
+  legNJpsiCost -> SetBorderSize(0);
+  legNJpsiCost -> SetFillColor(10);
+  legNJpsiCost -> SetFillStyle(1);
+  legNJpsiCost -> SetLineStyle(0);
+  legNJpsiCost -> SetLineColor(0);
+  legNJpsiCost -> SetTextFont(42);
+  legNJpsiCost -> SetTextSize(0.035);
+  legNJpsiCost -> AddEntry(histNJpsiCostSigmaFree_ANACX2,"Free #sigma_{J/#psi}","L");
+  legNJpsiCost -> AddEntry(histNJpsiCostSigmaFixed_ANACX2,"Fixed #sigma_{J/#psi}","L");
+
+  double maximumNJpsiCost = histNJpsiCostSigmaFree_ANACX2 -> GetBinContent(histNJpsiCostSigmaFree_ANACX2 -> FindBin(0));
+
+  TCanvas *cFit1DCost = new TCanvas("cFit1DCost","cFit1DCost",4,132,1024,768);
+  TH2D *hNJpsiCost = new TH2D("hNJpsiCost","",100,-1,1,100,maximumNJpsiCost - 0.8*maximumNJpsiCost,maximumNJpsiCost + 0.8*maximumNJpsiCost);
+  hNJpsiCost -> Draw();
+  legNJpsiCost -> Draw("same");
+  histNJpsiCostSigmaFixed_ANACX2 -> Draw("same");
+  histNJpsiCostSigmaFree_ANACX2 -> Draw("same");
+  for(int i = 0;i < 3;i++){
+    func1DCostSigmaFixed[i] -> Draw("same");
+    func1DCostSigmaFree[i] -> Draw("same");
+    latLambdaTheta[i] -> Draw("same");
+  }
+
+  cFit1DCost -> SaveAs(Form("/home/luca/Scrivania/%s.png",dataset.c_str()));
+
+  return;
+  /*TCanvas *cFit1DCostSigmaFixedX2 = new TCanvas("cFit1DCostSigmaFixedX2","cFit1DCostSigmaFixedX2",4,132,1024,768);
+  hNJpsiCost -> Draw();
+  histNJpsiCostSigmaFixed_ANACX2 -> Draw("same");
+  func1DCostSigmaFixedX2 -> Draw("same");
+  //legNJpsiCost -> Draw("same");
+
+
+  TCanvas *cFit1DCostSigmaFreeX2 = new TCanvas("cFit1DCostSigmaFreeX2","cFit1DCostSigmaFreeX2",4,132,1024,768);
+  hNJpsiCost -> Draw();
+  histNJpsiCostSigmaFree_ANACX2 -> Draw("same");
+  func1DCostSigmaFreeX2 -> Draw("same");*/
+  //legNJpsiCost -> Draw("same");
 
   /*TF1 *func1D_Phi_W_HE_X2 = new TF1("func1D_Phi_W_HE_X2",Func_cost,min_fit_range_Phi,max_fit_range_Phi,2);
   func1D_Phi_W_HE_X2 -> SetParameter(0,1000);
@@ -277,10 +413,10 @@ void helicity_polarization_fit_2D(int ptMin, int ptMax){
   func2D_W_HE_LW -> SetParName(2,"#lambda_{#phi}");
   func2D_W_HE_LW -> SetParameter(3,0);
   func2D_W_HE_LW -> SetParName(3,"#lambda_{#theta#phi}");
-  hist_N_Jpsi_HE_ANACLW -> Fit(func2D_W_HE_LW,"RSI0WL");
+  histNJpsiSigmaFixed_ANACLW -> Fit(func2D_W_HE_LW,"RSI0WL");
 
   TCanvas *c_fit2D_HE_LW = new TCanvas("c_fit2D_HE_LW","c_fit2D_HE_LW",4,132,1024,768);
-  hist_N_Jpsi_HE_ANACLW -> Draw("COLZ");
+  histNJpsiSigmaFixed_ANACLW -> Draw("COLZ");
   func2D_W_HE_LW -> Draw("same");*/
 
   /*double central_binx;
@@ -289,9 +425,9 @@ void helicity_polarization_fit_2D(int ptMin, int ptMax){
   TH2D *histo_diff_fit_LW = new TH2D("histo_diff_fit_LW","",NCostBins,&CostValues[0],NPhiBins,&PhiValues[0]);
   for(int i = 0;i < NCostBins;i++){
     for(int j = 0;j < NPhiBins;j++){
-      central_binx = hist_N_Jpsi_HE_ANACLW -> GetXaxis() -> GetBinCenter(i+1,j+1);
-      central_biny = hist_N_Jpsi_HE_ANACLW -> GetYaxis() -> GetBinCenter(i+1,j+1);
-      histo_diff_fit_LW -> SetBinContent(i+1,j+1,hist_N_Jpsi_HE_ANACLW -> GetBinContent(i+1,j+1)/func2D_W_HE_LW -> Eval(central_binx,central_biny));
+      central_binx = histNJpsiSigmaFixed_ANACLW -> GetXaxis() -> GetBinCenter(i+1,j+1);
+      central_biny = histNJpsiSigmaFixed_ANACLW -> GetYaxis() -> GetBinCenter(i+1,j+1);
+      histo_diff_fit_LW -> SetBinContent(i+1,j+1,histNJpsiSigmaFixed_ANACLW -> GetBinContent(i+1,j+1)/func2D_W_HE_LW -> Eval(central_binx,central_biny));
     }
   }*/
 

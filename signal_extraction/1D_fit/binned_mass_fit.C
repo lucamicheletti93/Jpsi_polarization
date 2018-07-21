@@ -194,6 +194,7 @@ void loop_on_histos(int ptMin, int ptMax){
     TH1D *histMinvSliceCost = (TH1D*) fileInput -> Get(histMinvName);
     histMinvSliceCost -> SetName(Form("HE_%icost%i",CostBinsMin[i],CostBinsMax[i]));
     string outputDir = "binned_1D_" + dataset + nameOption;
+    if(i == NCostBins-2){histMinvSliceCost -> Rebin(2);}
     fit_of_minv(histMinvSliceCost,i,100,dataset,outputDir);
     histMinvSliceCost -> Draw();
     histNJpsiCost -> SetBinContent(i+1,nJpsi);

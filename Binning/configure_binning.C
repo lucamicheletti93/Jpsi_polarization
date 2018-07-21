@@ -80,7 +80,7 @@ void configure_binning(){
   //============================================================================
   const int N_cost_bins_6pt10_test = 19;
   int min_cost_bin_6pt10_test[N_cost_bins_6pt10_test] = {1,11,16,21,26,31,36,41,45,49,53,57,61,66,71,76,81,86,91};
-  int max_cost_bin_6pt10_test[N_cost_bins_6pt10_test] = {10,15,20,25,30,35,40,44,48,52,56,60,65,70,75,80,,85,90,100};
+  int max_cost_bin_6pt10_test[N_cost_bins_6pt10_test] = {10,15,20,25,30,35,40,44,48,52,56,60,65,70,75,80,85,90,100};
 
   const int N_phi_bins_6pt10_test = 10;
   int min_phi_bin_6pt10_test[N_phi_bins_6pt10_test] = {1,9,17,21,24,26,28,31,35,43};
@@ -114,7 +114,7 @@ void configure_binning(){
   //============================================================================
   const int N_cost_bins_2pt4_test = 19;
   int min_cost_bin_2pt4_test[N_cost_bins_2pt4_test] = {1,11,16,21,26,31,36,41,45,49,53,57,61,66,71,76,81,86,91};
-  int max_cost_bin_2pt4_test[N_cost_bins_2pt4_test] = {10,15,20,25,30,35,40,44,48,52,56,60,65,70,75,80,,85,90,100};
+  int max_cost_bin_2pt4_test[N_cost_bins_2pt4_test] = {10,15,20,25,30,35,40,44,48,52,56,60,65,70,75,80,85,90,100};
 
   const int N_phi_bins_2pt4_test = 10;
   int min_phi_bin_2pt4_test[N_phi_bins_2pt4_test] = {1,9,17,21,24,26,28,31,35,43};
@@ -177,7 +177,7 @@ void configure_binning(){
   //============================================================================
   const int N_cost_bins_4pt6_test = 19;
   int min_cost_bin_4pt6_test[N_cost_bins_4pt6_test] = {1,11,16,21,26,31,36,41,45,49,53,57,61,66,71,76,81,86,91};
-  int max_cost_bin_4pt6_test[N_cost_bins_4pt6_test] = {10,15,20,25,30,35,40,44,48,52,56,60,65,70,75,80,,85,90,100};
+  int max_cost_bin_4pt6_test[N_cost_bins_4pt6_test] = {10,15,20,25,30,35,40,44,48,52,56,60,65,70,75,80,85,90,100};
 
   const int N_phi_bins_4pt6_test = 10;
   int min_phi_bin_4pt6_test[N_phi_bins_4pt6_test] = {1,9,17,21,24,26,28,31,35,43};

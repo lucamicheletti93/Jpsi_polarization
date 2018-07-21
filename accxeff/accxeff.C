@@ -40,7 +40,7 @@ void accxeff(int pt_min, int pt_max){
   //============================================================================
   printf("---> Setting main quantities ... \n");
   //============================================================================
-  LoadStyle();
+  //LoadStyle();
   gStyle -> SetOptStat(0);
   double PI = TMath::Pi();
 
@@ -58,11 +58,15 @@ void accxeff(int pt_min, int pt_max){
   string fileBinningName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_" + dataset + nameOption + ".root";
   string fileInputName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/GIT_OUTPUT/HistosFromOfficialTree_Jpsi_PbPb_Nopol_TH3rec.root";
   string fileInputName1DBinned = "/home/luca/GITHUB/Jpsi_polarization/2D_approach/data_analysis/signal_extraction/1D_fit/binned_1D_" + dataset + nameOption + "/" + dataset + ".root";
+  string fileInputName2D = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + nameOption + ".root";
   string fileSigmaName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/NEW_GIT_OUTPUT/sigma_Jpsi_" + dataset + nameOption + ".root";
   string fileOutputName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/NEW_GIT_OUTPUT/accxeff_" + dataset + nameOption + ".root";
 
   TFile *fileBinning = new TFile(fileBinningName.c_str(),"READ");
   TFile *fileInput = new TFile(fileInputName.c_str(),"READ");
+
+  double fitRangeMinCost = -0.7;
+  double fitRangeMaxCost = 0.7;
 
   //============================================================================
   printf("---> Reading the binning file ... \n");
@@ -249,6 +253,8 @@ void accxeff(int pt_min, int pt_max){
   printf("---> Drawing J/psi sigma ... \n");
   //============================================================================
   TFile *fileInput1DBinned = new TFile(fileInputName1DBinned.c_str(),"READ");
+  TFile *fileInput2D = new TFile(fileInputName2D.c_str(),"READ");
+
   TCanvas *cSigmaJpsi = new TCanvas("cSigmaJpsi","cSigmaJpsi",20,20,600,600);
   cSigmaJpsi -> Divide(2,2);
 
@@ -329,12 +335,12 @@ void accxeff(int pt_min, int pt_max){
   histSigmaJpsiCostBinned -> SetLineColor(kRed);
   histSigmaJpsiCostBinned -> Scale(1000);
 
-  TF1 *funcSigmaJpsiCost = new TF1("funcSigmaJpsiCost","pol2",-1,1);
+  TF1 *funcSigmaJpsiCost = new TF1("funcSigmaJpsiCost","pol2",fitRangeMinCost,fitRangeMaxCost);
   funcSigmaJpsiCost -> SetLineColor(kBlue);
   funcSigmaJpsiCost -> SetLineStyle(kDashed);
   histSigmaJpsiCost -> Fit(funcSigmaJpsiCost,"0");
 
-  TF1 *funcSigmaJpsiCostBinned = new TF1("funcSigmaJpsiCostBinned","pol2",-1,1);
+  TF1 *funcSigmaJpsiCostBinned = new TF1("funcSigmaJpsiCostBinned","pol2",fitRangeMinCost,fitRangeMaxCost);
   funcSigmaJpsiCostBinned -> SetLineColor(kRed);
   funcSigmaJpsiCostBinned -> SetLineStyle(kDashed);
   histSigmaJpsiCostBinned -> Fit(funcSigmaJpsiCostBinned,"0");
@@ -351,6 +357,7 @@ void accxeff(int pt_min, int pt_max){
   funcSigmaJpsiCostBinned -> Draw("same");
 
   cSigmaJpsi -> cd(3);
+  gStyle -> SetPaintTextFormat("2.1f");
   TPad *pad4 = new TPad("pad4","pad4",0.,0.05,1.,0.3);
   pad4 -> SetTopMargin(0);
   pad4 -> SetBottomMargin(0.2);
@@ -378,6 +385,13 @@ void accxeff(int pt_min, int pt_max){
   axisRatioSigmaDataMCCost -> Draw("same");
   histRatioSigmaDataMCCost -> Draw("same");
   lUnityCost -> Draw("same");
+
+  cSigmaJpsi -> cd(4);
+  TH2D *histSigmaJpsiCostPhiData = (TH2D*) fileInput2D -> Get("histSigmaJpsi");
+  TH2D *histRatioSigmaDataMCCostPhi = new TH2D("histRatioSigmaDataMCCostPhi","#sigma_{J/#psi}^{DATA}/#sigma_{J/#psi}^{MC}",NCostBins,&CostValues[0],NPhiBins,&PhiValues[0]);
+  histRatioSigmaDataMCCostPhi -> Divide(histSigmaJpsiCostPhiData,histSigmaJpsi,1,1);
+  hSigmaJpsi -> Draw();
+  histRatioSigmaDataMCCostPhi -> Draw("COLZtextsame");
 
   //============================================================================
   printf("---> Saving sigma Jpsi ... \n");

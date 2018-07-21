@@ -103,10 +103,10 @@ void single_histo_fit(int ptMin, int ptMax){
   TH2D *histSigmaJpsiMC = (TH2D*) fileSigmaJpsiMC -> Get("histSigmaJpsi");
 
   //TH1D *histMinv = (TH1D*) fileInput -> Get("HE_26cost30_9phi16");
-  TH1D *histMinv = (TH1D*) fileInput -> Get("histCost_16_Phi_1");
+  TH1D *histMinv = (TH1D*) fileInput -> Get("histCost_15_Phi_2");
   histMinv -> SetMarkerStyle(20);
   histMinv -> SetMarkerSize(0.7);
-  fit_of_minv(histMinv,16,1,dataset,outputDir,histSigmaJpsiMC);
+  fit_of_minv(histMinv,15,2,dataset,outputDir,histSigmaJpsiMC);
 }
 //==============================================================================
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -135,7 +135,8 @@ void loop_on_histos(int ptMin, int ptMax){
 
   string fileBinningName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_" + dataset + nameOption + ".root";
   string fileInputName = "/home/luca/GITHUB/Jpsi_polarization/2D_approach/data_analysis/signal_extraction/" + dataset + nameOption + ".root";
-  string fileOutputName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + nameOption + ".root";
+  string fileOutputName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + "_fixed_sigma" + nameOption + ".root";
+  //string fileOutputName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + nameOption + ".root";
   string fileSigmaJpsiMCName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/NEW_GIT_OUTPUT/sigma_Jpsi_" + dataset + nameOption + ".root";
 
   TFile *fileBinning = new TFile(fileBinningName.c_str(),"READ");
@@ -201,6 +202,7 @@ void loop_on_histos(int ptMin, int ptMax){
   if(saveTree){
     TFile *fileOutput = new TFile(fileOutputName.c_str(),"RECREATE");
     histNJpsi -> Write();
+    histSigmaJpsi -> Write();
     fileOutput -> Close();
     printf("The file is saved in %s \n",fileOutputName.c_str());
   }
@@ -219,7 +221,7 @@ void fit_of_minv(TH1D *histMinv, int counterCost, int counterPhi, string dataset
   double max_fit_range = 4.9;
   string tails = "pp8";
   string tails_fix = "yes";
-  string sigma_fix = "no";
+  string sigma_fix = "yes";
 
   //============================================================================
   // FIT STARTING PARAMETERS
@@ -230,6 +232,10 @@ void fit_of_minv(TH1D *histMinv, int counterCost, int counterPhi, string dataset
     par_signal[0] = 500.; par_signal[1] = 3.096; par_signal[2] = 7.0e-02;
     par_signal[3] = 1.00011e+00; par_signal[4] = 3.70078e+00; par_signal[5] = 1.68359e+00; par_signal[6] = 3.63002e+00; par_signal[7] = 0.01;
     string histTmpName = histMinv -> GetName();
+    if(counterCost == 1 || counterCost == 2 || counterCost == 16 || counterCost == 17){histMinv -> Rebin(2);}
+    //if(histTmpName == "histCost_16_Phi_1" && sigma_fix == "no"){histMinv -> Rebin(2);}
+    if(histTmpName == "histCost_15_Phi_1" && sigma_fix == "yes"){histMinv -> Rebin(2);}
+    //if(histTmpName == "histCost_17_Phi_5" && sigma_fix == "yes"){histMinv -> Rebin(2);}
   }
 
   if(dataset == "4pt6"){
@@ -237,6 +243,8 @@ void fit_of_minv(TH1D *histMinv, int counterCost, int counterPhi, string dataset
     par_signal[0] = 500.; par_signal[1] = 3.096; par_signal[2] = 7.0e-02;
     par_signal[3] = 1.00011e+00; par_signal[4] = 3.70078e+00; par_signal[5] = 1.68359e+00; par_signal[6] = 3.63002e+00; par_signal[7] = 0.01;
     string histTmpName = histMinv -> GetName();
+    if(counterCost == 1 || counterCost == 2 || counterCost == 16 || counterCost == 17){histMinv -> Rebin(2);}
+    if(histTmpName == "histCost_15_Phi_2" && sigma_fix == "no"){histMinv -> Rebin(2);}
   }
 
   if(dataset == "6pt10"){
@@ -244,8 +252,9 @@ void fit_of_minv(TH1D *histMinv, int counterCost, int counterPhi, string dataset
     par_signal[0] = 500.; par_signal[1] = 3.096; par_signal[2] = 7.0e-02;
     par_signal[3] = 1.00011e+00; par_signal[4] = 3.70078e+00; par_signal[5] = 1.68359e+00; par_signal[6] = 3.63002e+00; par_signal[7] = 0.01;
     string histTmpName = histMinv -> GetName();
-    if(histTmpName == "HE_26cost30_9phi16" && sigma_fix == "yes"){histMinv -> Rebin(2);}
-    if(counterCost == 2 || counterCost == 16 && sigma_fix == "no"){histMinv -> Rebin(2);}
+    if(counterCost == 1 || counterCost == 2 || counterCost == 16 || counterCost == 17){histMinv -> Rebin(2);}
+    //if(histTmpName == "HE_26cost30_9phi16" && sigma_fix == "yes"){histMinv -> Rebin(2);}
+    //if(counterCost == 2 || counterCost == 16 && sigma_fix == "no"){histMinv -> Rebin(2);}
     // rebin
     //if(histTmpName == "HE_11cost20_9phi16"){histMinv -> Rebin(2);}
     //if(histTmpName == "HE_11cost20_17phi20"){histMinv -> Rebin(4);}

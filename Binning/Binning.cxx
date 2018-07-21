@@ -67,6 +67,20 @@ vector <Double_t> Binning::GetPhiValues(){
   return fPhiValues;
 }
 //______________________________________________________________________________
+vector <Double_t> Binning::GetCostWidth(){
+  for(int i = 0;i < fNCostBins;i++){
+    fCostWidth.push_back(fCostValues[i+1] - fCostValues[i]);
+  }
+  return fCostWidth;
+}
+//______________________________________________________________________________
+vector <Double_t> Binning::GetPhiWidth(){
+  for(int i = 0;i < fNPhiBins;i++){
+    fPhiWidth.push_back(fPhiValues[i+1] - fPhiValues[i]);
+  }
+  return fPhiWidth;
+}
+//______________________________________________________________________________
 vector <Int_t> Binning::GetCostBinsMin(){
   return fCostBinsMin;
 }

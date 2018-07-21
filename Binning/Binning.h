@@ -16,9 +16,11 @@ class Binning : public TObject
 
    void ConfigureBinValues(int NCostBins, int CostBinsMin[], int CostBinsMax[], int NPhiBins, int PhiBinsMin[], int PhiBinsMax[]);
    void PrintBinValues();
-   
+
    vector <Double_t> GetCostValues();
    vector <Double_t> GetPhiValues();
+   vector <Double_t> GetCostWidth();
+   vector <Double_t> GetPhiWidth();
    vector <Int_t> GetCostBinsMin();
    vector <Int_t> GetCostBinsMax();
    vector <Int_t> GetPhiBinsMin();
@@ -32,6 +34,8 @@ class Binning : public TObject
    Int_t fNPhiBins;
    vector <Double_t> fCostValues;
    vector <Double_t> fPhiValues;
+   vector <Double_t> fCostWidth;
+   vector <Double_t> fPhiWidth;
    vector <Int_t> fCostBinsMin;
    vector <Int_t> fCostBinsMax;
    vector <Int_t> fPhiBinsMin;
