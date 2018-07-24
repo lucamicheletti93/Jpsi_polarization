@@ -23,12 +23,14 @@
 #endif
 
 void create_TH2_from_MCtree(){
+
   //============================================================================
   printf("---> Setting main quantities ... \n");
   //============================================================================
   char *PATH_IN = "~/cernbox/JPSI/JPSI_POLARIZATION/JIRA_TICKET/READ_MC/OUTPUT";
   char FILE_NAME_IN[400];
   sprintf(FILE_NAME_IN,"%s/MC_official_tree_Jpsi_PbPb_Nopol.root",PATH_IN);
+  
   //============================================================================
   printf("---> Defining TH2 (gen) and TH3 (rec) histogram ... \n");
   //============================================================================
@@ -62,34 +64,6 @@ void create_TH2_from_MCtree(){
   TH2D *hCostPhiCS_11pt12_2m_gen = new TH2D("hCostPhiCS_11pt12_2m_gen","hCostPhiCS_11pt12_2m_gen",100,-1,1,50,0,PI);
   TH2D *hCostPhiCS_12ptinf_2m_gen = new TH2D("hCostPhiCS_12ptinf_2m_gen","hCostPhiCS_12ptinf_2m_gen",100,-1,1,50,0,PI);
 
-  /*TH2D *hCostPhiHE_0pt1_2m_rec = new TH2D("hCostPhiHE_0pt1_2m_rec","hCostPhiHE_0pt1_2m_rec",100,-1,1,50,0,PI);
-  TH2D *hCostPhiHE_1pt2_2m_rec = new TH2D("hCostPhiHE_1pt2_2m_rec","hCostPhiHE_1pt2_2m_rec",100,-1,1,50,0,PI);
-  TH2D *hCostPhiHE_2pt3_2m_rec = new TH2D("hCostPhiHE_2pt3_2m_rec","hCostPhiHE_2pt3_2m_rec",100,-1,1,50,0,PI);
-  TH2D *hCostPhiHE_3pt4_2m_rec = new TH2D("hCostPhiHE_3pt4_2m_rec","hCostPhiHE_3pt4_2m_rec",100,-1,1,50,0,PI);
-  TH2D *hCostPhiHE_4pt5_2m_rec = new TH2D("hCostPhiHE_4pt5_2m_rec","hCostPhiHE_4pt5_2m_rec",100,-1,1,50,0,PI);
-  TH2D *hCostPhiHE_5pt6_2m_rec = new TH2D("hCostPhiHE_5pt6_2m_rec","hCostPhiHE_5pt6_2m_rec",100,-1,1,50,0,PI);
-  TH2D *hCostPhiHE_6pt7_2m_rec = new TH2D("hCostPhiHE_6pt7_2m_rec","hCostPhiHE_6pt7_2m_rec",100,-1,1,50,0,PI);
-  TH2D *hCostPhiHE_7pt8_2m_rec = new TH2D("hCostPhiHE_7pt8_2m_rec","hCostPhiHE_7pt8_2m_rec",100,-1,1,50,0,PI);
-  TH2D *hCostPhiHE_8pt9_2m_rec = new TH2D("hCostPhiHE_8pt9_2m_rec","hCostPhiHE_8pt9_2m_rec",100,-1,1,50,0,PI);
-  TH2D *hCostPhiHE_9pt10_2m_rec = new TH2D("hCostPhiHE_9pt10_2m_rec","hCostPhiHE_9pt10_2m_rec",100,-1,1,50,0,PI);
-  TH2D *hCostPhiHE_10pt11_2m_rec = new TH2D("hCostPhiHE_10pt11_2m_rec","hCostPhiHE_10pt11_2m_rec",100,-1,1,50,0,PI);
-  TH2D *hCostPhiHE_11pt12_2m_rec = new TH2D("hCostPhiHE_11pt12_2m_rec","hCostPhiHE_11pt12_2m_rec",100,-1,1,50,0,PI);
-  TH2D *hCostPhiHE_12ptinf_2m_rec = new TH2D("hCostPhiHE_12ptinf_2m_rec","hCostPhiHE_12ptinf_2m_rec",100,-1,1,50,0,PI);
-
-  TH2D *hCostPhiCS_0pt1_2m_rec = new TH2D("hCostPhiCS_0pt1_2m_rec","hCostPhiCS_0pt1_2m_rec",100,-1,1,50,0,PI);
-  TH2D *hCostPhiCS_1pt2_2m_rec = new TH2D("hCostPhiCS_1pt2_2m_rec","hCostPhiCS_1pt2_2m_rec",100,-1,1,50,0,PI);
-  TH2D *hCostPhiCS_2pt3_2m_rec = new TH2D("hCostPhiCS_2pt3_2m_rec","hCostPhiCS_2pt3_2m_rec",100,-1,1,50,0,PI);
-  TH2D *hCostPhiCS_3pt4_2m_rec = new TH2D("hCostPhiCS_3pt4_2m_rec","hCostPhiCS_3pt4_2m_rec",100,-1,1,50,0,PI);
-  TH2D *hCostPhiCS_4pt5_2m_rec = new TH2D("hCostPhiCS_4pt5_2m_rec","hCostPhiCS_4pt5_2m_rec",100,-1,1,50,0,PI);
-  TH2D *hCostPhiCS_5pt6_2m_rec = new TH2D("hCostPhiCS_5pt6_2m_rec","hCostPhiCS_5pt6_2m_rec",100,-1,1,50,0,PI);
-  TH2D *hCostPhiCS_6pt7_2m_rec = new TH2D("hCostPhiCS_6pt7_2m_rec","hCostPhiCS_6pt7_2m_rec",100,-1,1,50,0,PI);
-  TH2D *hCostPhiCS_7pt8_2m_rec = new TH2D("hCostPhiCS_7pt8_2m_rec","hCostPhiCS_7pt8_2m_rec",100,-1,1,50,0,PI);
-  TH2D *hCostPhiCS_8pt9_2m_rec = new TH2D("hCostPhiCS_8pt9_2m_rec","hCostPhiCS_8pt9_2m_rec",100,-1,1,50,0,PI);
-  TH2D *hCostPhiCS_9pt10_2m_rec = new TH2D("hCostPhiCS_9pt10_2m_rec","hCostPhiCS_9pt10_2m_rec",100,-1,1,50,0,PI);
-  TH2D *hCostPhiCS_10pt11_2m_rec = new TH2D("hCostPhiCS_10pt11_2m_rec","hCostPhiCS_10pt11_2m_rec",100,-1,1,50,0,PI);
-  TH2D *hCostPhiCS_11pt12_2m_rec = new TH2D("hCostPhiCS_11pt12_2m_rec","hCostPhiCS_11pt12_2m_rec",100,-1,1,50,0,PI);
-  TH2D *hCostPhiCS_12ptinf_2m_rec = new TH2D("hCostPhiCS_12ptinf_2m_rec","hCostPhiCS_12ptinf_2m_rec",100,-1,1,50,0,PI);*/
-
   TH3D *hCostPhiMassHE_0pt1_2m_rec = new TH3D("hCostPhiMassHE_0pt1_2m_rec","hCostPhiMassHE_0pt1_2m_rec",100,-1,1,50,0,PI,120,2,5);
   TH3D *hCostPhiMassHE_1pt2_2m_rec = new TH3D("hCostPhiMassHE_1pt2_2m_rec","hCostPhiMassHE_1pt2_2m_rec",100,-1,1,50,0,PI,120,2,5);
   TH3D *hCostPhiMassHE_2pt3_2m_rec = new TH3D("hCostPhiMassHE_2pt3_2m_rec","hCostPhiMassHE_2pt3_2m_rec",100,-1,1,50,0,PI,120,2,5);
@@ -117,11 +91,11 @@ void create_TH2_from_MCtree(){
   TH3D *hCostPhiMassCS_10pt11_2m_rec = new TH3D("hCostPhiMassCS_10pt11_2m_rec","hCostPhiMassCS_10pt11_2m_rec",100,-1,1,50,0,PI,120,2,5);
   TH3D *hCostPhiMassCS_11pt12_2m_rec = new TH3D("hCostPhiMassCS_11pt12_2m_rec","hCostPhiMassCS_11pt12_2m_rec",100,-1,1,50,0,PI,120,2,5);
   TH3D *hCostPhiMassCS_12ptinf_2m_rec = new TH3D("hCostPhiMassCS_12ptinf_2m_rec","hCostPhiMassCS_12ptinf_2m_rec",100,-1,1,50,0,PI,120,2,5);
+
   //============================================================================
-  //OPENING THE FILE
+  printf("---> Setting the chain ... \n");
   //============================================================================
   TChain *chain = new TChain("MCTree");
-
   Long_t *dummy1 = 0, *dummy2 = 0, *dummy3 = 0, *dummy4 = 0;
   if(gSystem -> GetPathInfo(FILE_NAME_IN,dummy1,dummy2,dummy3,dummy4) != 0){
     printf("NOT EXISTING FILE\n");
@@ -130,12 +104,10 @@ void create_TH2_from_MCtree(){
 
   printf("Opening %s\n",FILE_NAME_IN);
   chain -> Add(FILE_NAME_IN);
-  //============================================================================
-  //SET TREE VARIABLES -> GENERATION
-  //============================================================================
-  //TStopwatch *clock1 = new TStopwatch();
-  //clock1 -> Start();
 
+  //============================================================================
+  printf("---> Setting tree variable (gen) ... \n");
+  //============================================================================
   Int_t NDimu_gen;
   Double_t DimuPt_gen[3000], DimuY_gen[3000];
   Double_t CostHE_gen[3000], PhiHE_gen[3000], CostCS_gen[3000], PhiCS_gen[3000];
@@ -147,8 +119,9 @@ void create_TH2_from_MCtree(){
   chain -> SetBranchAddress("PhiHE_gen",PhiHE_gen);
   chain -> SetBranchAddress("CostCS_gen",CostCS_gen);
   chain -> SetBranchAddress("PhiCS_gen",PhiCS_gen);
+
   //============================================================================
-  //FILLING HISTOS
+  printf("---> Filling TH2D (gen) ... \n");
   //============================================================================
   Int_t NEntries = chain -> GetEntries();
   for(int i = 0;i < NEntries;i++){
@@ -172,16 +145,10 @@ void create_TH2_from_MCtree(){
         }
       }
     }
-    printf("\n");
-    //clock1 -> Stop();
-    //clock1 -> Print();
 
     //==========================================================================
-    //SET TREE VARIABLES -> RECONSTRUCTION
+    printf("---> Setting tree variable (rec) ... \n");
     //==========================================================================
-    //TStopwatch *clock2 = new TStopwatch();
-    //clock2 -> Start();
-
     Int_t NDimu_rec;
     Double_t DimuPt_rec[3000], DimuY_rec[3000];
     Double_t DimuMass_rec[3000];
@@ -201,9 +168,9 @@ void create_TH2_from_MCtree(){
     chain -> SetBranchAddress("PhiCS_rec",PhiCS_rec);
     //chain -> SetBranchAddress("IsPhysSelected",&IsPhysSelected); //???
 
-    //============================================================================
-    //FILLING HISTOS
-    //============================================================================
+    //==========================================================================
+    printf("---> Filling TH3D (rec) ... \n");
+    //==========================================================================
     NEntries = chain -> GetEntries();
     for(int i = 0;i < NEntries;i++){
       printf("RECONSTRUCTED %i -> %i : %3.2f%\r",NEntries,i,(double) i/NEntries*100);
@@ -218,19 +185,6 @@ void create_TH2_from_MCtree(){
             //if(TriggerSelected){
               if(DimuMatch_rec[k] == 2){
                 if(DimuMass_rec[k] > 2 && DimuMass_rec[k] < 5){
-                  /*if(DimuPt_rec[k] > 0 && DimuPt_rec[k] <= 1){hCostPhiHE_0pt1_2m_rec -> Fill(CostHE_rec[k],TMath::Abs(PhiHE_rec[k])); hCostPhiCS_0pt1_2m_rec -> Fill(CostCS_rec[k],TMath::Abs(PhiCS_rec[k]));}
-                  if(DimuPt_rec[k] > 1 && DimuPt_rec[k] <= 2){hCostPhiHE_1pt2_2m_rec -> Fill(CostHE_rec[k],TMath::Abs(PhiHE_rec[k])); hCostPhiCS_1pt2_2m_rec -> Fill(CostCS_rec[k],TMath::Abs(PhiCS_rec[k]));}
-                  if(DimuPt_rec[k] > 2 && DimuPt_rec[k] <= 3){hCostPhiHE_2pt3_2m_rec -> Fill(CostHE_rec[k],TMath::Abs(PhiHE_rec[k])); hCostPhiCS_2pt3_2m_rec -> Fill(CostCS_rec[k],TMath::Abs(PhiCS_rec[k]));}
-                  if(DimuPt_rec[k] > 3 && DimuPt_rec[k] <= 4){hCostPhiHE_3pt4_2m_rec -> Fill(CostHE_rec[k],TMath::Abs(PhiHE_rec[k])); hCostPhiCS_3pt4_2m_rec -> Fill(CostCS_rec[k],TMath::Abs(PhiCS_rec[k]));}
-                  if(DimuPt_rec[k] > 4 && DimuPt_rec[k] <= 5){hCostPhiHE_4pt5_2m_rec -> Fill(CostHE_rec[k],TMath::Abs(PhiHE_rec[k])); hCostPhiCS_4pt5_2m_rec -> Fill(CostCS_rec[k],TMath::Abs(PhiCS_rec[k]));}
-                  if(DimuPt_rec[k] > 5 && DimuPt_rec[k] <= 6){hCostPhiHE_5pt6_2m_rec -> Fill(CostHE_rec[k],TMath::Abs(PhiHE_rec[k])); hCostPhiCS_5pt6_2m_rec -> Fill(CostCS_rec[k],TMath::Abs(PhiCS_rec[k]));}
-                  if(DimuPt_rec[k] > 6 && DimuPt_rec[k] <= 7){hCostPhiHE_6pt7_2m_rec -> Fill(CostHE_rec[k],TMath::Abs(PhiHE_rec[k])); hCostPhiCS_6pt7_2m_rec -> Fill(CostCS_rec[k],TMath::Abs(PhiCS_rec[k]));}
-                  if(DimuPt_rec[k] > 7 && DimuPt_rec[k] <= 8){hCostPhiHE_7pt8_2m_rec -> Fill(CostHE_rec[k],TMath::Abs(PhiHE_rec[k])); hCostPhiCS_7pt8_2m_rec -> Fill(CostCS_rec[k],TMath::Abs(PhiCS_rec[k]));}
-                  if(DimuPt_rec[k] > 8 && DimuPt_rec[k] <= 9){hCostPhiHE_8pt9_2m_rec -> Fill(CostHE_rec[k],TMath::Abs(PhiHE_rec[k])); hCostPhiCS_8pt9_2m_rec -> Fill(CostCS_rec[k],TMath::Abs(PhiCS_rec[k]));}
-                  if(DimuPt_rec[k] > 9 && DimuPt_rec[k] <= 10){hCostPhiHE_9pt10_2m_rec -> Fill(CostHE_rec[k],TMath::Abs(PhiHE_rec[k])); hCostPhiCS_9pt10_2m_rec -> Fill(CostCS_rec[k],TMath::Abs(PhiCS_rec[k]));}
-                  if(DimuPt_rec[k] > 10 && DimuPt_rec[k] <= 11){hCostPhiHE_10pt11_2m_rec -> Fill(CostHE_rec[k],TMath::Abs(PhiHE_rec[k])); hCostPhiCS_10pt11_2m_rec -> Fill(CostCS_rec[k],TMath::Abs(PhiCS_rec[k]));}
-                  if(DimuPt_rec[k] > 11 && DimuPt_rec[k] <= 12){hCostPhiHE_11pt12_2m_rec -> Fill(CostHE_rec[k],TMath::Abs(PhiHE_rec[k])); hCostPhiCS_11pt12_2m_rec -> Fill(CostCS_rec[k],TMath::Abs(PhiCS_rec[k]));}
-                  if(DimuPt_rec[k] > 12){hCostPhiHE_12ptinf_2m_rec -> Fill(CostHE_rec[k],TMath::Abs(PhiHE_rec[k])); hCostPhiCS_12ptinf_2m_rec -> Fill(CostCS_rec[k],TMath::Abs(PhiCS_rec[k]));}*/
                   if(DimuPt_rec[k] > 0 && DimuPt_rec[k] <= 1){hCostPhiMassHE_0pt1_2m_rec -> Fill(CostHE_rec[k],TMath::Abs(PhiHE_rec[k]),DimuMass_rec[k]); hCostPhiMassCS_0pt1_2m_rec -> Fill(CostCS_rec[k],TMath::Abs(PhiCS_rec[k]),DimuMass_rec[k]);}
                   if(DimuPt_rec[k] > 1 && DimuPt_rec[k] <= 2){hCostPhiMassHE_1pt2_2m_rec -> Fill(CostHE_rec[k],TMath::Abs(PhiHE_rec[k]),DimuMass_rec[k]); hCostPhiMassCS_1pt2_2m_rec -> Fill(CostCS_rec[k],TMath::Abs(PhiCS_rec[k]),DimuMass_rec[k]);}
                   if(DimuPt_rec[k] > 2 && DimuPt_rec[k] <= 3){hCostPhiMassHE_2pt3_2m_rec -> Fill(CostHE_rec[k],TMath::Abs(PhiHE_rec[k]),DimuMass_rec[k]); hCostPhiMassCS_2pt3_2m_rec -> Fill(CostCS_rec[k],TMath::Abs(PhiCS_rec[k]),DimuMass_rec[k]);}
@@ -252,18 +206,11 @@ void create_TH2_from_MCtree(){
       }
     }
 
-    printf("\n");
-    //clock2 -> Stop();
-    //clock2 -> Print();
-
-    //============================================================================
-    //SAVE FILES
-    //============================================================================
-
-    //char *PATH_OUT = "READING_MC/OUTPUT_TREE/OUTPUT_TH3";
+    //==========================================================================
+    printf("---> Saving histos ... \n");
+    //==========================================================================
     char FILE_NAME_OUT[400];
-    //sprintf(FILE_NAME_OUT,"/home/luca/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/GIT_OUTPUT/HistosFromOfficialTree_Jpsi_PbPb_Nopol.root"); // for ubuntu
-    sprintf(FILE_NAME_OUT,"~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/GIT_OUTPUT/HistosFromOfficialTree_Jpsi_PbPb_Nopol_TH3rec.root"); // for mac
+    sprintf(FILE_NAME_OUT,"~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/GIT_OUTPUT/HistosFromOfficialTree_Jpsi_PbPb_Nopol_TH3rec.root");
     TFile *file_out = new TFile(FILE_NAME_OUT,"RECREATE");
     file_out -> cd();
     hCostPhiHE_0pt1_2m_gen -> Write();
@@ -293,34 +240,6 @@ void create_TH2_from_MCtree(){
     hCostPhiCS_10pt11_2m_gen -> Write();
     hCostPhiCS_11pt12_2m_gen -> Write();
     hCostPhiCS_12ptinf_2m_gen -> Write();
-
-    /*hCostPhiHE_0pt1_2m_rec -> Write();
-    hCostPhiHE_1pt2_2m_rec -> Write();
-    hCostPhiHE_2pt3_2m_rec -> Write();
-    hCostPhiHE_3pt4_2m_rec -> Write();
-    hCostPhiHE_4pt5_2m_rec -> Write();
-    hCostPhiHE_5pt6_2m_rec -> Write();
-    hCostPhiHE_6pt7_2m_rec -> Write();
-    hCostPhiHE_7pt8_2m_rec -> Write();
-    hCostPhiHE_8pt9_2m_rec -> Write();
-    hCostPhiHE_9pt10_2m_rec -> Write();
-    hCostPhiHE_10pt11_2m_rec -> Write();
-    hCostPhiHE_11pt12_2m_rec -> Write();
-    hCostPhiHE_12ptinf_2m_rec -> Write();
-
-    hCostPhiCS_0pt1_2m_rec -> Write();
-    hCostPhiCS_1pt2_2m_rec -> Write();
-    hCostPhiCS_2pt3_2m_rec -> Write();
-    hCostPhiCS_3pt4_2m_rec -> Write();
-    hCostPhiCS_4pt5_2m_rec -> Write();
-    hCostPhiCS_5pt6_2m_rec -> Write();
-    hCostPhiCS_6pt7_2m_rec -> Write();
-    hCostPhiCS_7pt8_2m_rec -> Write();
-    hCostPhiCS_8pt9_2m_rec -> Write();
-    hCostPhiCS_9pt10_2m_rec -> Write();
-    hCostPhiCS_10pt11_2m_rec -> Write();
-    hCostPhiCS_11pt12_2m_rec -> Write();
-    hCostPhiCS_12ptinf_2m_rec -> Write();*/
 
     hCostPhiMassHE_0pt1_2m_rec -> Write();
     hCostPhiMassHE_1pt2_2m_rec -> Write();

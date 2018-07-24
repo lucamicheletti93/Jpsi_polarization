@@ -128,6 +128,8 @@ void helicity_polarization_fit_2D(int ptMin, int ptMax){
   for(int i = 0;i < NCostLines;i++) line_cost[i] -> Draw("same");
   for(int i = 0;i < NPhiLines;i++) line_phi[i] -> Draw("same");
 
+  printf("---> Integral : %i \n",(int) histNJpsiSigmaFixed -> Integral());
+
   //============================================================================
   printf("---> Reading the the Acc X Eff and projecting ... \n");
   //============================================================================
