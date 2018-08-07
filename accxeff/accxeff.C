@@ -57,13 +57,22 @@ void accxeff(int pt_min, int pt_max){
 
   string fileBinningName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/Binning/binning_" + dataset + nameOption + ".root";
   string fileInputName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/GIT_OUTPUT/HistosFromOfficialTree_Jpsi_PbPb_Nopol_TH3rec.root";
+  //////////////////////////////////////////////////////////////////////////////
+  string fileInputWeightedName = "Histos_Jpsi_Rec_Weigthed.root";
+  //////////////////////////////////////////////////////////////////////////////
   string fileInputName1DBinned = "/home/luca/GITHUB/Jpsi_polarization/2D_approach/data_analysis/signal_extraction/1D_fit/binned_1D_" + dataset + nameOption + "/" + dataset + ".root";
   string fileInputName2D = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/SIGNAL_EXTRACTION/HISTOS_FOR_SIGNAL_EXTRACTION/NEW_GIT_OUTPUT/N_Jpsi_" + dataset + nameOption + ".root";
   string fileSigmaName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/NEW_GIT_OUTPUT/sigma_Jpsi_" + dataset + nameOption + ".root";
+  //////////////////////////////////////////////////////////////////////////////
   string fileOutputName = "~/cernbox/JPSI/JPSI_POLARIZATION/ANALYSIS/TWO_DIM_APPROACH/ACCXEFF/HISTOS_FOR_ACCXEFF/NEW_GIT_OUTPUT/accxeff_" + dataset + nameOption + ".root";
+  //string fileOutputName = "accxeff_weighted_" + dataset + nameOption + ".root";
+  //////////////////////////////////////////////////////////////////////////////
 
   TFile *fileBinning = new TFile(fileBinningName.c_str(),"READ");
   TFile *fileInput = new TFile(fileInputName.c_str(),"READ");
+  //////////////////////////////////////////////////////////////////////////////
+  TFile *fileInputWeighted = new TFile(fileInputWeightedName.c_str(),"READ");
+  //////////////////////////////////////////////////////////////////////////////
 
   double fitRangeMinCost = -0.7;
   double fitRangeMaxCost = 0.7;
@@ -101,7 +110,10 @@ void accxeff(int pt_min, int pt_max){
     TH2D *tmpTH2HistoGen = (TH2D*) fileInput -> Get(Form("hCostPhiHE_%ipt%i_2m_gen",i,i+1));
     //cout << tmpTH2HistoGen -> GetBinContent(20,20) << " " << tmpTH2HistoGen -> GetBinError(20,20) << endl;
     histCostPhiGen -> Add(tmpTH2HistoGen);
+    ////////////////////////////////////////////////////////////////////////////
     TH3D *tmpTH3Histo = (TH3D*) fileInput -> Get(Form("hCostPhiMassHE_%ipt%i_2m_rec",i,i+1));
+    //TH3D *tmpTH3Histo = (TH3D*) fileInputWeighted -> Get(Form("hCostPhiMassHE_%ipt%i_2m_rec",i,i+1));
+    ////////////////////////////////////////////////////////////////////////////
     histCostPhiMassRec -> Add(tmpTH3Histo);
   }
   TH2D *histCostPhiRec = (TH2D*) histCostPhiMassRec -> Project3D("yx");
